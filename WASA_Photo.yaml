@@ -1,0 +1,553 @@
+openapi: 3.0.0
+info: 
+  title: WASA Photo
+  description:  |
+    APIs designed for a social focused on photos
+  version: 1.0.0
+
+tags:
+  - name: Login
+  - name: User
+    description: About users
+  - name: Photo
+    description: About photos
+  - name: Comment
+    description: About comments
+  - name: Like
+    description: About likes
+
+paths:
+
+  /session:
+    
+    post:
+      tags:
+        - Login
+      summary: Logs in the user
+      description:  |
+        If the user does not exist, it will be created, and 
+        an identifier is returned.
+        If the user exists, the identifier is returned.
+      operationId: doLogin
+      requestBody:
+        description: user details
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Maria
+                  pattern: '^.*?$'
+                  minLength: 3
+                  maxLength: 16
+        required: true
+      responses:
+        '200':
+          description: User log-in action succesful
+          content:
+            application/json: 
+              schema:
+                  type: object
+                  properties:
+                    identifier:
+                      type: string
+                      example: "abcdef012345" 
+  
+  /session/{username}/:
+    
+    get:
+      tags:  
+        - User
+      summary: Get my stream
+      description: Get my stream of all photos
+      operationId: getMyStream
+      parameters:
+        - name: username
+          in: path
+          description: Username of current user
+          required: true
+          schema:
+            $ref: '#components/schemas/Username'
+      responses:
+        '200':
+          description: Profile page returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#components/schemas/Photo'
+
+  /session/{username}/changeUsername:
+    
+    put:
+      tags:
+        - User
+      summary: Change username
+      description:  Change username of user of current session
+      operationId: setMyUsername
+      parameters:
+        - name: newUsername
+          in: query
+          description: New username 
+          required: true
+          schema:
+            type: string
+        - name: username
+          in: path
+          description: Username of current user
+          required: true
+          schema:
+            $ref: '#components/schemas/Username'
+      responses:
+        '200':
+          description: Username changed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/User'
+
+  /session/{username}/uploadPhoto:
+    
+    post:
+      tags:
+        - User
+      summary: Upload photo
+      description: Upload a photo for the current user
+      operationId: uploadPhoto
+      parameters:
+        - name: username
+          in: path
+          description: Username of current user
+          required: true
+          schema:
+            $ref: '#components/schemas/Username'
+      requestBody:
+        content:
+          image/png:
+            schema:
+              type: string
+              format: binary
+          image/jpg:
+            schema:
+              type: string
+              format: binary
+          image/jpeg:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: Photo uploaded successfully
+        '400':
+          description: Invalid request
+  
+  /session/{photoId}:
+    
+    get:
+      tags:
+        - Photo
+      summary: Show photo
+      description: Show a specific photo
+      operationId: showPhoto
+      parameters:
+        - name: photoId
+          in: path
+          description: Identifier of photo showed
+          required: true
+          schema:
+            $ref: '#components/schemas/Identifier'
+      responses:
+        '200':
+          description: Photo opened successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Photo'
+
+    delete:
+      tags:
+        - Photo
+      summary: Delete a photo
+      description: Delete a specific photo of the current user
+      operationId: deletePhoto
+      parameters:
+        - name: photoId
+          in: path
+          description: Identifier of photo to delete
+          required: true
+          schema:
+            $ref: '#components/schemas/Identifier'
+      responses:
+        '200': 
+          description: Photo deleted successfully
+        '400':
+          description: Invalid request
+
+  /session/findUser:
+
+    get:
+      tags:
+        - User
+      summary: Find an user
+      description: Find an user specifing the username
+      operationId: getUserProfile
+      parameters:
+        - name: username
+          in: query
+          description: Username of user we are looking for
+          required: true
+          schema:
+            type: string
+            example: FraDepe
+      responses:
+        '200':
+          description: User found successfully
+          content:
+            application/json:
+              schema: 
+                $ref: '#components/schemas/User'
+        '404':
+          description: User not found
+
+  /session/{photoId}/leaveComment:
+
+    get:
+      tags:
+        - Comment
+      summary: Leave a comment
+      description: Leave a comment for a specific photo
+      operationId: commentPhoto
+      parameters:
+        - name: photoId
+          in: path
+          description: Identifier of the photo to comment
+          required: true
+          schema: 
+            $ref: '#components/schemas/Identifier' 
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#components/schemas/Comment'
+      responses:
+        '200':
+          description: Photo commented successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Comment'
+        '400':
+          description: Invalid request
+
+  /session/{commentId}:
+
+    put: 
+      tags:
+        - Comment
+      summary: Modify a comment
+      description: Modify a specific comment
+      operationId: modifyComment
+      parameters: 
+        - name: commentId
+          in: path
+          description: Identifier of comment to modify
+          required: true
+          schema: 
+            $ref: '#components/schemas/Identifier'
+      responses:
+        '200':
+          description: Comment modified successfully
+        '400':
+          description: Invalid request
+
+    delete:
+      tags:
+        - Comment
+      summary: Delete a comment
+      description: Delete a specific comment
+      operationId: uncommentPhoto
+      parameters: 
+        - name: commentId
+          in: path
+          description: Identifier of comment to delete
+          required: true
+          schema:
+            $ref: '#components/schemas/Identifier'
+      responses:
+        '200': 
+          description: Comment deleted successfully
+        '400':
+          description: Invalid request
+
+  /session/{photoId}/leaveLike:
+
+    get:
+      tags:
+        - Like
+      summary: Leave a like
+      description: Leave a like to a specific photo
+      operationId: likePhoto
+      parameters:
+        - name: photoId
+          in: path
+          description: Identifier of photo to like
+          required: true
+          schema:
+            $ref: '#components/schemas/Identifier'
+      responses:
+        '200':
+          description: Photo liked successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Like'
+        '400':
+          description: Invalid request
+
+  /session/{photoId}/removeLike:
+
+    delete:
+      tags:
+        - Like
+      summary: Remove a like
+      description: Remove like to a specific photo 
+      operationId: unlikePhoto
+      parameters: 
+        - name: photoId
+          in: path
+          description: Identifier of photo
+          required: true
+          schema:
+            $ref: '#components/schemas/Identifier'
+      responses:
+        '200':
+          description: Like removed successfully
+        '400':
+          description: Invalid request
+
+  /session/{username}/followUser:
+
+    put:
+      tags:
+        - User
+      summary: Follow an user
+      description: Follow a specific user
+      operationId: followUser
+      parameters:
+        - name: username
+          in: path
+          description: Username of user we wants to follow
+          required: true
+          schema:
+            $ref: '#components/schemas/Username'
+      requestBody:
+        description: Identifier of user who's started following
+        content:
+          application/json:
+            schema:
+              $ref: '#component/schemas/UserIdentifier'
+      responses:
+        '200':
+          description: User followed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/User"
+        '400': 
+          description: Invalid request
+
+  /session/{username}/unfollowUser:
+
+    put:
+      tags:
+        - User
+      summary: Unfollow an user
+      description: Unfollow a specific user
+      operationId: unfollowUser
+      parameters:
+        - name: username
+          in: path
+          description: Username of user we wants to unfollow
+          required: true
+          schema:
+            $ref: '#components/schemas/Username'
+      requestBody:
+        description: Identifier of user who's started unfollowing
+        content:
+          application/json:
+            schema:
+              $ref: '#component/schemas/UserIdentifier'
+      responses:
+        '200':
+          description: User unfollowed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/User"
+        '400': 
+          description: Invalid request
+   
+  /session/{username}/banUser:
+
+    put:
+      tags:
+        - User
+      summary: Ban an user
+      description: Ban a specific user
+      operationId: banUser
+      parameters:
+        - name: username
+          in: path
+          description: Username of user we wants to ban
+          required: true
+          schema:
+            $ref: '#components/schemas/Username'
+      requestBody:
+        description: Identifier of user who's banning
+        content:
+          application/json:
+            schema:
+              $ref: '#component/schemas/UserIdentifier'
+      responses:
+        '200':
+          description: User banned successfully
+        '400': 
+          description: Invalid request
+
+  /session/{username}/unbanUser:
+
+    put:
+      tags:
+        - User
+      summary: Unban an user
+      description: Unaban a specific user
+      operationId: unbanUser
+      parameters:
+        - name: username
+          in: path
+          description: Username of user we wants to unban
+          required: true
+          schema:
+            $ref: '#components/schemas/Username'
+      requestBody:
+        description: Identifier of user who's unbanning
+        content:
+          application/json:
+            schema:
+              $ref: '#component/schemas/UserIdentifier'
+      responses:
+        '200':
+          description: User unbanned successfully
+        '400': 
+          description: Invalid request
+
+
+
+
+
+components:
+  schemas:
+  
+    Identifier:
+      description: Unique identifier used for several components
+      type: integer
+      example: 6365 
+
+    UserIdentifier:
+      description: Unique identifier for users
+      type: string
+      example: abcdef012345
+
+    Username:
+      description: Name of an user
+      type: string
+      example: FraDepe 
+
+    User:   #Utente
+      required:
+        - id
+        - follower
+        - following
+        - username
+      type: object
+      properties:
+        id:
+          $ref: '#components/schemas/UserIdentifier'
+        username:
+          $ref: '#components/schemas/Username'
+        follower:
+          type: array
+          description: List of people following this user
+          items:
+            $ref: '#components/schemas/UserIdentifier'
+        following:
+          type: array
+          description: List of people this user is following
+          items:
+            $ref: '#components/schemas/UserIdentifier'
+        photos:
+          type: array
+          items:
+            $ref: "#components/schemas/Photo"
+ 
+    Photo:   
+      required:
+        - id
+        - photo_url
+        - likes
+        - comments_number
+        - date_time
+        - comments
+      type: object
+      properties:
+        id:
+          $ref: '#components/schemas/Identifier'
+        photo_url:
+          type: string
+          format: data URL
+        likes:
+          type: array
+          items:
+            $ref: "#components/schemas/Like"
+        date_time:
+          type: string
+          format: date-time
+          description: Date and time of post "dd/mm/yyyy hh:mm:ss"
+          example: "16/08/2001 17:30:07"
+        comments:
+          type: array
+          items:
+            $ref: "#components/schemas/Comment"
+ 
+    Comment:  #A comment
+      required:
+        - id
+        - text
+        - photoId
+        - userId
+      type: object
+      properties:
+        id: 
+          $ref: '#components/schemas/Identifier'
+        photoId:
+          $ref: '#components/schemas/Identifier'
+        userId:
+          $ref: '#components/schemas/UserIdentifier'
+        text:
+          type: string
+          description: A simple text
+          example: Sample text
+      
+    Like:
+      required:
+        - photoId
+        - userId
+      type: object
+      properties:
+        photoId:
+          $ref: '#components/schemas/Identifier'
+        userId:
+          $ref: '#components/schemas/UserIdentifier'
