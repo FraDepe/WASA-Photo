@@ -42,7 +42,6 @@ paths:
               properties:
                 name:
                   type: string
-                  format: default
                   example: Maria
                   pattern: '^.*?$'
                   minLength: 3
@@ -59,7 +58,6 @@ paths:
                 properties:
                   identifier:
                     type: string
-                    format: default
                     example: "abcdef012345" 
   
   /home/:
@@ -295,7 +293,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
 
-  /{photoId}/leaveComment:
+  /photo/{photoId}/leaveComment:
 
     post:
       tags:
@@ -655,7 +653,6 @@ components:
     UserIdentifier:
       description: Unique identifier for users
       type: string
-      format: default
       pattern: '^.*?$'
       minLength: 3
       maxLength: 16
@@ -664,7 +661,6 @@ components:
     Username:
       description: Name of an user
       type: string
-      format: default
       pattern: '^.*?$'
       minLength: 4
       maxLength: 24 
@@ -719,7 +715,6 @@ components:
           $ref: '#/components/schemas/Identifier'
         photo_url:
           type: string
-          format: data URL
         likes:
           type: array
           minItems: 0
@@ -752,7 +747,6 @@ components:
           $ref: '#/components/schemas/UserIdentifier'
         text:
           type: string
-          format: default
           description: A simple text
           example: Sample text
       
@@ -775,7 +769,5 @@ components:
           format: int32
         type:
           type: string
-          format: default
         message:
           type: string
-          format: default
