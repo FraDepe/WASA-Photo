@@ -58,6 +58,8 @@ paths:
                 properties:
                   identifier:
                     type: string
+                    minLength: 12
+                    maxLength: 20
                     example: "abcdef012345" 
   
   /home/:
@@ -77,6 +79,7 @@ paths:
                 description: Array of photos
                 type: array
                 minItems: 0
+                maxItems: 40
                 items:
                   $ref: '#/components/schemas/Photo'
         '500':
@@ -86,13 +89,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
   
-  /{username}/:
+  /users/{username}/:
     
     get:
       tags:  
         - User
       summary: Get my stream
       description: Get my stream of all photos
+      security:
+        - bearerAuth: []
       operationId: getMyStream
       parameters:
         - name: username
@@ -110,6 +115,7 @@ paths:
                 description: Array of photos
                 type: array
                 minItems: 0
+                maxItems: 40
                 items:
                   $ref: '#/components/schemas/Photo'
         '500':
@@ -119,7 +125,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
 
-  /{username}/changeUsername:
+  /users/{userId}/changeUsername:
     
     put:
       tags:
@@ -130,18 +136,17 @@ paths:
         - bearerAuth: []
       operationId: setMyUsername
       parameters:
-        - name: newUsername
-          in: query
-          description: New username 
-          required: true
-          schema:
-            $ref: '#/components/schemas/Username'
-        - name: username
+        - name: userId
           in: path
           description: Username of current user
           required: true
           schema:
-            $ref: '#/components/schemas/Username'
+            $ref: '#/components/schemas/UserIdentifier'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Username"
       responses:
         '200':
           description: Username changed successfully
@@ -156,7 +161,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
 
-  /{username}/uploadPhoto:
+  /users/{username}/uploadPhoto:
     post:
       tags:
         - User
@@ -174,7 +179,15 @@ paths:
             $ref: '#/components/schemas/Username'
       requestBody:
         content:
-          application/octet-stream:
+          image/png:
+            schema:
+              type: string
+              format: binary
+          image/jpg:
+            schema:
+              type: string
+              format: binary
+          image/jpeg:
             schema:
               type: string
               format: binary
@@ -205,6 +218,8 @@ paths:
         - Photo
       summary: Show photo
       description: Show a specific photo
+      security:
+        - bearerAuth: []
       operationId: showPhoto
       parameters:
         - name: photoId
@@ -258,7 +273,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
 
-  /findUser:
+  /users/findUser:
 
     get:
       tags:
@@ -293,7 +308,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
 
-  /photo/{photoId}/leaveComment:
+  /photo/{photoId}/leaveComment/{userId}:
 
     post:
       tags:
@@ -310,6 +325,12 @@ paths:
           required: true
           schema: 
             $ref: '#/components/schemas/Identifier' 
+        - name: userId
+          in: path
+          description: Identifier of user who's commenting
+          required: true
+          schema: 
+            $ref: '#/components/schemas/UserIdentifier' 
       requestBody:
         content:
           application/json:
@@ -335,7 +356,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
 
-  /{commentId}:
+  /photo/{photoId}/comment{commentId}:
 
     put: 
       tags:
@@ -346,6 +367,12 @@ paths:
         - bearerAuth: []
       operationId: modifyComment
       parameters: 
+        - name: photoId
+          in: path
+          description: Identifier of photo
+          required: true
+          schema:
+            $ref: '#/components/schemas/Identifier'
         - name: commentId
           in: path
           description: Identifier of comment to modify
@@ -381,6 +408,12 @@ paths:
         - bearerAuth: []
       operationId: uncommentPhoto
       parameters: 
+        - name: photoId
+          in: path
+          description: Identifier of photo
+          required: true
+          schema:
+            $ref: '#/components/schemas/Identifier'
         - name: commentId
           in: path
           description: Identifier of comment to delete
@@ -403,9 +436,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
 
-  /{photoId}/leaveLike:
+  /photo/{photoId}/like/{userId}:
 
-    get:
+    post:
       tags:
         - Like
       summary: Leave a like
@@ -420,8 +453,14 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/Identifier'
+        - name: userId
+          in: path
+          description: Identifier of user who's leaving like
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserIdentifier'
       responses:
-        '200':
+        '201':
           description: Photo liked successfully
           content:
             application/json:
@@ -440,8 +479,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
 
-  /{photoId}/removeLike:
-
     delete:
       tags:
         - Like
@@ -457,6 +494,12 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/Identifier'
+        - name: userId
+          in: path
+          description: Identifier of user who's removing like
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserIdentifier'
       responses:
         '204':
           description: Like removed successfully
@@ -473,7 +516,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
 
-  /{username}/followUser:
+  /users/{userId}/follow/{userIdToFollow}:
 
     put:
       tags:
@@ -484,18 +527,18 @@ paths:
         - bearerAuth: []
       operationId: followUser
       parameters:
-        - name: username
+        - name: userId
           in: path
-          description: Username of user we wants to follow
+          description: Identifier of user who's following
           required: true
           schema:
-            $ref: '#/components/schemas/Username'
-      requestBody:
-        description: Identifier of user who's started following
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserIdentifier'
+            $ref: '#/components/schemas/UserIdentifier'
+        - name: userIdToFollow
+          in: path
+          description: Identifier of user to follow
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserIdentifier'
       responses:
         '200':
           description: User followed successfully
@@ -516,9 +559,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
 
-  /{username}/unfollowUser:
-
-    put:
+    delete:
       tags:
         - User
       summary: Unfollow an user
@@ -527,25 +568,21 @@ paths:
         - bearerAuth: []
       operationId: unfollowUser
       parameters:
-        - name: username
+        - name: userId
           in: path
-          description: Username of user we wants to unfollow
+          description: Identifier of user who's following
           required: true
           schema:
-            $ref: '#/components/schemas/Username'
-      requestBody:
-        description: Identifier of user who's started unfollowing
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserIdentifier'
+            $ref: '#/components/schemas/UserIdentifier'
+        - name: userIdToFollow
+          in: path
+          description: Identifier of user to follow
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserIdentifier'
       responses:
-        '200':
+        '204':
           description: User unfollowed successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
         '400': 
           description: Invalid request
           content:
@@ -559,7 +596,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
    
-  /{username}/banUser:
+  /users/{userId}/ban/{userIdToBan}:
 
     put:
       tags:
@@ -570,12 +607,18 @@ paths:
         - bearerAuth: []
       operationId: banUser
       parameters:
-        - name: username
+        - name: userId
           in: path
-          description: Username of user we wants to follow
+          description: Identifier of user who's following
           required: true
           schema:
-            $ref: '#/components/schemas/Username'
+            $ref: '#/components/schemas/UserIdentifier'
+        - name: userIdToBan
+          in: path
+          description: Identifier of user to follow
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserIdentifier'
       responses:
         '200':
           description: User banned successfully
@@ -596,9 +639,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
 
-  /{username}/unbanUser:
-
-    put:
+    delete:
       tags:
         - User
       summary: Unban an user
@@ -607,19 +648,21 @@ paths:
         - bearerAuth: []
       operationId: unbanUser
       parameters:
-        - name: username
+        - name: userId
           in: path
-          description: Username of user we wants to unban
+          description: Identifier of user who's following
           required: true
           schema:
-            $ref: '#/components/schemas/Username'
+            $ref: '#/components/schemas/UserIdentifier'
+        - name: userIdToBan
+          in: path
+          description: Identifier of user to follow
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserIdentifier'
       responses:
-        '200':
+        '204':
           description: User unbanned successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
         '400': 
           description: Invalid request
           content:
@@ -681,24 +724,28 @@ components:
         follower:
           type: array
           minItems: 0
+          maxItems: 50
           description: List of people following this user
           items:
             $ref: '#/components/schemas/UserIdentifier'
         following:
           type: array
           minItems: 0
+          maxItems: 50
           description: List of people this user is following
           items:
             $ref: '#/components/schemas/UserIdentifier'
         banned:
           type: array
           minItems: 0
+          maxItems: 50
           description: List of user banned
           items:
             $ref: "#/components/schemas/UserIdentifier"
         photos:
           type: array
           minItems: 0
+          maxItems: 40
           items:
             $ref: "#/components/schemas/Photo"
  
@@ -718,6 +765,7 @@ components:
         likes:
           type: array
           minItems: 0
+          maxItems: 50
           items:
             $ref: "#/components/schemas/Like"
         date_time:
@@ -728,6 +776,7 @@ components:
         comments:
           type: array
           minItems: 0
+          maxItems: 50
           items:
             $ref: "#/components/schemas/Comment"
  
@@ -747,6 +796,8 @@ components:
           $ref: '#/components/schemas/UserIdentifier'
         text:
           type: string
+          minLength: 1
+          maxLength: 5000
           description: A simple text
           example: Sample text
       
@@ -769,5 +820,9 @@ components:
           format: int32
         type:
           type: string
+          minLength: 1
+          maxLength: 50
         message:
           type: string
+          minLength: 1
+          maxLength: 5000
