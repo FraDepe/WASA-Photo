@@ -54,16 +54,7 @@ paths:
           content:
             application/json: 
               schema:
-                description: Example of a possible identifier
-                type: object
-                properties:
-                  identifier:
-                    description: User identifier
-                    type: string
-                    minLength: 12
-                    maxLength: 20
-                    pattern: '[a-z0-9]+'
-                    example: "abcdef012345" 
+                $ref: "#/components/schemas/UserIdentifier"
   
   /home/:
   
@@ -187,14 +178,23 @@ paths:
           image/png:
             schema:
               type: string
+              description: String for png representation
+              minLength: 1
+              maxLength: 500
               format: binary
           image/jpg:
             schema:
               type: string
+              description: String for jpg representation
+              minLength: 1
+              maxLength: 500
               format: binary
           image/jpeg:
             schema:
               type: string
+              description: String for jpeg representation
+              minLength: 1
+              maxLength: 500
               format: binary
       responses:
         '201':
@@ -349,7 +349,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
 
-  /photos/{photoId}/comments{commentId}:
+  /photos/{photoId}/comments/{commentId}:
 
     parameters: 
       - name: photoId
@@ -669,6 +669,7 @@ components:
         - following
         - username
       type: object
+      description: User of platform
       properties:
         id:
           $ref: '#/components/schemas/UserIdentifier'
@@ -705,12 +706,13 @@ components:
  
     Photo:   
       required:
-        - id
+        - photo_id
         - photo_url
         - likes
         - date_time
         - comments
       type: object
+      description: Photo of platform
       properties:
         photo_id:
           $ref: '#/components/schemas/Identifier'
@@ -743,10 +745,11 @@ components:
  
     Comment:  #A comment
       required:
-        - id
+        - comment_id
         - text
         - userId
       type: object
+      description: Comment to a photo
       properties:
         comment_id: 
           $ref: '#/components/schemas/Identifier'
@@ -756,14 +759,16 @@ components:
           type: string
           minLength: 1
           maxLength: 5000
+          pattern: '^.*?$'
           description: A simple text
           example: Sample text
       
     Like:
       required:
         - photoId
-        - userId
+        - user_Id
       type: object
+      description: Like to a photo
       properties:
         photoId:
           $ref: '#/components/schemas/Identifier'
@@ -772,6 +777,7 @@ components:
       
     ApiResponse:
       type: object
+      description: Text of responses
       properties:
         code:
           type: integer
