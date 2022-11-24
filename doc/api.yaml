@@ -41,6 +41,7 @@ paths:
               type: object
               properties:
                 name:
+                  description: Username
                   type: string
                   example: Maria
                   pattern: '^.*?$'
@@ -48,7 +49,7 @@ paths:
                   maxLength: 16
         required: true
       responses:
-        '200':
+        '201':
           description: User log-in action succesful
           content:
             application/json: 
@@ -57,9 +58,11 @@ paths:
                 type: object
                 properties:
                   identifier:
+                    description: User identifier
                     type: string
                     minLength: 12
                     maxLength: 20
+                    pattern: '[a-z0-9]+'
                     example: "abcdef012345" 
   
   /home/:
@@ -69,6 +72,8 @@ paths:
         - Home
       summary: Get stream of following
       description: Get stream of photos of following
+      security:
+        - bearerAuth: []
       operationId: getFollowingStream
       responses:
         '200':
@@ -89,7 +94,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
   
-  /users/{username}/:
+  /users/{userId}/:
     
     get:
       tags:  
@@ -100,12 +105,12 @@ paths:
         - bearerAuth: []
       operationId: getMyStream
       parameters:
-        - name: username
+        - name: userId
           in: path
           description: Username of current user
           required: true
           schema:
-            $ref: '#/components/schemas/Username'
+            $ref: '#/components/schemas/UserIdentifier'
       responses:
         '200':
           description: Profile page returned successfully
@@ -161,7 +166,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
 
-  /users/{username}/uploadPhoto:
+  /users/{userId}/uploadPhoto:
     post:
       tags:
         - User
@@ -171,12 +176,12 @@ paths:
         - bearerAuth: []
       operationId: uploadPhoto
       parameters:
-        - name: username
+        - name: userId
           in: path
           description: Username of current user
           required: true
           schema:
-            $ref: '#/components/schemas/Username'
+            $ref: '#/components/schemas/UserIdentifier'
       requestBody:
         content:
           image/png:
@@ -211,23 +216,23 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
   
-  /photo/{photoId}:
+  /photos/{photoId}:
+    
+    parameters:
+      - name: photoId
+        in: path
+        description: Identifier of photo showed
+        required: true
+        schema:
+          $ref: "#/components/schemas/Identifier"
     
     get:
       tags:
         - Photo
       summary: Show photo
       description: Show a specific photo
-      security:
-        - bearerAuth: []
       operationId: showPhoto
-      parameters:
-        - name: photoId
-          in: path
-          description: Identifier of photo showed
-          required: true
-          schema:
-            $ref: "#/components/schemas/Identifier"
+      
       responses:
         '200':
           description: Photo opened successfully
@@ -250,13 +255,7 @@ paths:
       security:
         - bearerAuth: []
       operationId: deletePhoto
-      parameters:
-        - name: photoId
-          in: path
-          description: Identifier of photo to delete
-          required: true
-          schema:
-            $ref: '#/components/schemas/Identifier'
+
       responses:
         '204': 
           description: Photo deleted successfully
@@ -308,7 +307,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
 
-  /photo/{photoId}/leaveComment/{userId}:
+  /photos/{photoId}/comments/:
 
     post:
       tags:
@@ -324,13 +323,7 @@ paths:
           description: Identifier of the photo to comment
           required: true
           schema: 
-            $ref: '#/components/schemas/Identifier' 
-        - name: userId
-          in: path
-          description: Identifier of user who's commenting
-          required: true
-          schema: 
-            $ref: '#/components/schemas/UserIdentifier' 
+            $ref: '#/components/schemas/Identifier'
       requestBody:
         content:
           application/json:
@@ -356,7 +349,21 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
 
-  /photo/{photoId}/comment{commentId}:
+  /photos/{photoId}/comments{commentId}:
+
+    parameters: 
+      - name: photoId
+        in: path
+        description: Identifier of photo
+        required: true
+        schema:
+          $ref: '#/components/schemas/Identifier'
+      - name: commentId
+        in: path
+        description: Identifier of comment to modify
+        required: true
+        schema: 
+          $ref: '#/components/schemas/Identifier'
 
     put: 
       tags:
@@ -366,19 +373,7 @@ paths:
       security:
         - bearerAuth: []
       operationId: modifyComment
-      parameters: 
-        - name: photoId
-          in: path
-          description: Identifier of photo
-          required: true
-          schema:
-            $ref: '#/components/schemas/Identifier'
-        - name: commentId
-          in: path
-          description: Identifier of comment to modify
-          required: true
-          schema: 
-            $ref: '#/components/schemas/Identifier'
+
       responses:
         '200':
           description: Comment modified successfully
@@ -407,19 +402,7 @@ paths:
       security:
         - bearerAuth: []
       operationId: uncommentPhoto
-      parameters: 
-        - name: photoId
-          in: path
-          description: Identifier of photo
-          required: true
-          schema:
-            $ref: '#/components/schemas/Identifier'
-        - name: commentId
-          in: path
-          description: Identifier of comment to delete
-          required: true
-          schema:
-            $ref: '#/components/schemas/Identifier'
+
       responses:
         '204': 
           description: Comment deleted successfully
@@ -436,7 +419,21 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
 
-  /photo/{photoId}/like/{userId}:
+  /photos/{photoId}/likes/{userId}:
+
+    parameters:
+      - name: photoId
+        in: path
+        description: Identifier of photo to like
+        required: true
+        schema:
+          $ref: '#/components/schemas/Identifier'
+      - name: userId
+        in: path
+        description: Identifier of user who's leaving like
+        required: true
+        schema:
+          $ref: '#/components/schemas/UserIdentifier'
 
     post:
       tags:
@@ -446,19 +443,7 @@ paths:
       security:
         - bearerAuth: []
       operationId: likePhoto
-      parameters:
-        - name: photoId
-          in: path
-          description: Identifier of photo to like
-          required: true
-          schema:
-            $ref: '#/components/schemas/Identifier'
-        - name: userId
-          in: path
-          description: Identifier of user who's leaving like
-          required: true
-          schema:
-            $ref: '#/components/schemas/UserIdentifier'
+
       responses:
         '201':
           description: Photo liked successfully
@@ -487,19 +472,7 @@ paths:
       security:
         - bearerAuth: []
       operationId: unlikePhoto
-      parameters: 
-        - name: photoId
-          in: path
-          description: Identifier of photo
-          required: true
-          schema:
-            $ref: '#/components/schemas/Identifier'
-        - name: userId
-          in: path
-          description: Identifier of user who's removing like
-          required: true
-          schema:
-            $ref: '#/components/schemas/UserIdentifier'
+      
       responses:
         '204':
           description: Like removed successfully
@@ -516,8 +489,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
 
-  /users/{userId}/follow/{userIdToFollow}:
-
+  /users/{userId}/following/{userIdToFollow}:
+  
+    parameters:
+      - name: userId
+        in: path
+        description: Identifier of user who's following
+        required: true
+        schema:
+          $ref: '#/components/schemas/UserIdentifier'
+      - name: userIdToFollow
+        in: path
+        description: Identifier of user to follow
+        required: true
+        schema:
+          $ref: '#/components/schemas/UserIdentifier'
+  
     put:
       tags:
         - User
@@ -526,19 +513,7 @@ paths:
       security:
         - bearerAuth: []
       operationId: followUser
-      parameters:
-        - name: userId
-          in: path
-          description: Identifier of user who's following
-          required: true
-          schema:
-            $ref: '#/components/schemas/UserIdentifier'
-        - name: userIdToFollow
-          in: path
-          description: Identifier of user to follow
-          required: true
-          schema:
-            $ref: '#/components/schemas/UserIdentifier'
+
       responses:
         '200':
           description: User followed successfully
@@ -567,19 +542,7 @@ paths:
       security:
         - bearerAuth: []
       operationId: unfollowUser
-      parameters:
-        - name: userId
-          in: path
-          description: Identifier of user who's following
-          required: true
-          schema:
-            $ref: '#/components/schemas/UserIdentifier'
-        - name: userIdToFollow
-          in: path
-          description: Identifier of user to follow
-          required: true
-          schema:
-            $ref: '#/components/schemas/UserIdentifier'
+      
       responses:
         '204':
           description: User unfollowed successfully
@@ -596,8 +559,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
    
-  /users/{userId}/ban/{userIdToBan}:
-
+  /users/{userId}/banned/{userIdToBan}:
+  
+    parameters:
+      - name: userId
+        in: path
+        description: Identifier of user who's following
+        required: true
+        schema:
+          $ref: '#/components/schemas/UserIdentifier'
+      - name: userIdToBan
+        in: path
+        description: Identifier of user to follow
+        required: true
+        schema:
+          $ref: '#/components/schemas/UserIdentifier'
+  
     put:
       tags:
         - User
@@ -606,19 +583,7 @@ paths:
       security:
         - bearerAuth: []
       operationId: banUser
-      parameters:
-        - name: userId
-          in: path
-          description: Identifier of user who's following
-          required: true
-          schema:
-            $ref: '#/components/schemas/UserIdentifier'
-        - name: userIdToBan
-          in: path
-          description: Identifier of user to follow
-          required: true
-          schema:
-            $ref: '#/components/schemas/UserIdentifier'
+      
       responses:
         '200':
           description: User banned successfully
@@ -647,19 +612,7 @@ paths:
       security:
         - bearerAuth: []
       operationId: unbanUser
-      parameters:
-        - name: userId
-          in: path
-          description: Identifier of user who's following
-          required: true
-          schema:
-            $ref: '#/components/schemas/UserIdentifier'
-        - name: userIdToBan
-          in: path
-          description: Identifier of user to follow
-          required: true
-          schema:
-            $ref: '#/components/schemas/UserIdentifier'
+      
       responses:
         '204':
           description: User unbanned successfully
@@ -694,9 +647,9 @@ components:
       example: 6365 
 
     UserIdentifier:
-      description: Unique identifier for users
+      description: Unique identifier for users 
       type: string
-      pattern: '^.*?$'
+      pattern: "[a-z0-9]+"
       minLength: 3
       maxLength: 16
       example: abcdef012345
@@ -746,6 +699,7 @@ components:
           type: array
           minItems: 0
           maxItems: 40
+          description: List of photos
           items:
             $ref: "#/components/schemas/Photo"
  
@@ -758,18 +712,24 @@ components:
         - comments
       type: object
       properties:
-        id:
+        photo_id:
           $ref: '#/components/schemas/Identifier'
         photo_url:
+          description: URL for photo
           type: string
+          minLength: 1
+          maxLength: 500
         likes:
           type: array
           minItems: 0
           maxItems: 50
+          description: List of likes
           items:
             $ref: "#/components/schemas/Like"
         date_time:
           type: string
+          minLength: 20
+          maxLength: 20
           format: date-time
           description: Date and time of post 
           example: "2017-07-21T17:32:28Z"
@@ -777,6 +737,7 @@ components:
           type: array
           minItems: 0
           maxItems: 50
+          description: List of comments
           items:
             $ref: "#/components/schemas/Comment"
  
@@ -784,13 +745,10 @@ components:
       required:
         - id
         - text
-        - photoId
         - userId
       type: object
       properties:
-        id: 
-          $ref: '#/components/schemas/Identifier'
-        photoId:
+        comment_id: 
           $ref: '#/components/schemas/Identifier'
         userId:
           $ref: '#/components/schemas/UserIdentifier'
@@ -809,7 +767,7 @@ components:
       properties:
         photoId:
           $ref: '#/components/schemas/Identifier'
-        userId:
+        user_Id:
           $ref: '#/components/schemas/UserIdentifier'
       
     ApiResponse:
@@ -818,11 +776,14 @@ components:
         code:
           type: integer
           format: int32
+          description: Response code
         type:
           type: string
           minLength: 1
           maxLength: 50
+          description: Type of response
         message:
           type: string
           minLength: 1
           maxLength: 5000
+          description: Text of response
