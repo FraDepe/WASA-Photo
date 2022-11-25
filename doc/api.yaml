@@ -231,6 +231,8 @@ paths:
         - Photo
       summary: Show photo
       description: Show a specific photo
+      security:
+        - bearerAuth: []
       operationId: showPhoto
       
       responses:
