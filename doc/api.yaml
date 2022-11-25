@@ -12,6 +12,10 @@ tags:
     description: About homepage
   - name: User
     description: About users
+  - name: Following
+    description: about following
+  - name: Ban
+    description: About bans
   - name: Photo
     description: About photos
   - name: Comment
@@ -85,8 +89,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
   
-  /users/{userId}/:
-    
+  /users/myStream/:
     get:
       tags:  
         - User
@@ -95,10 +98,38 @@ paths:
       security:
         - bearerAuth: []
       operationId: getMyStream
+      responses:
+        '200':
+          description: Profile page returned successfully
+          content:
+            application/json:
+              schema:
+                description: Array of photos
+                type: array
+                minItems: 0
+                maxItems: 40
+                items:
+                  $ref: '#/components/schemas/Photo'
+        '500':
+          description: The server encountered an internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+      
+  
+  /users/{userId}/:
+    
+    get:
+      tags:  
+        - User
+      summary: Get user stream
+      description: Get stream of all photos of a specific user
+      operationId: getUserStream
       parameters:
         - name: userId
           in: path
-          description: Username of current user
+          description: Username of user
           required: true
           schema:
             $ref: '#/components/schemas/UserIdentifier'
@@ -114,6 +145,12 @@ paths:
                 maxItems: 40
                 items:
                   $ref: '#/components/schemas/Photo'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
         '500':
           description: The server encountered an internal error
           content:
@@ -150,6 +187,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
         '500':
           description: The server encountered an internal error
           content:
@@ -242,6 +285,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Photo'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
         '500':
           description: The server encountered an internal error
           content:
@@ -311,6 +360,45 @@ paths:
 
   /photos/{photoId}/comments/:
 
+    parameters:
+      - name: photoId
+        in: path
+        description: Identifier of the photo 
+        required: true
+        schema: 
+          $ref: '#/components/schemas/Identifier'
+
+    get:
+      tags:
+        - Comment
+      summary: List comments
+      description: List all comments of a photo
+      operationId: listComments
+      responses: 
+        '200':
+          description: Comments listed successfully
+          content:
+            application/json:
+              schema:
+                description: List of comments
+                type: array
+                minItems: 0
+                maxItems: 50
+                items:
+                  $ref: '#/components/schemas/Comment'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: The server encountered an internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+      
     post:
       tags:
         - Comment
@@ -319,13 +407,6 @@ paths:
       security:
         - bearerAuth: []
       operationId: commentPhoto
-      parameters:
-        - name: photoId
-          in: path
-          description: Identifier of the photo to comment
-          required: true
-          schema: 
-            $ref: '#/components/schemas/Identifier'
       requestBody:
         content:
           application/json:
@@ -366,6 +447,32 @@ paths:
         required: true
         schema: 
           $ref: '#/components/schemas/Identifier'
+
+    get:
+      tags:
+        - Comment
+      summary: Get specific comment
+      description: Return a specific comment of a specific photo
+      operationId: getComment
+      responses:
+        '200':
+          description: Comment returned succesfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: The server encountered an internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
 
     put: 
       tags:
@@ -408,6 +515,46 @@ paths:
       responses:
         '204': 
           description: Comment deleted successfully
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: The server encountered an internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  /photos/{photoId}/likes/:
+    
+    get:
+      tags:
+        - Like
+      summary: List likes
+      description: List all likes assigned to a photo
+      operationId: listLikes
+      parameters:
+        - name: photoId
+          in: path
+          description: Identifier of photo to like
+          required: true
+          schema:
+            $ref: '#/components/schemas/Identifier'
+      responses:
+        '200':
+          description: List of likes returned successfully
+          content:
+            application/json: 
+              schema:
+                description: List of likes
+                type: array
+                minItems: 0
+                maxItems: 100
+                items:
+                  $ref: "#/components/schemas/Like"
         '400':
           description: Invalid request
           content:
@@ -491,6 +638,49 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
 
+  /users/{userId}/following/:
+  
+    get:
+      tags:
+        - Following
+      summary: List following
+      description: Get list of users followed by a specific user
+      parameters:
+        - name: userId
+          in: path
+          description: Identifier of user who's following
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserIdentifier'
+      security:
+        - bearerAuth: []
+      operationId: listFollowed
+      
+      responses: 
+        '200':
+          description: List of following returned succesfully
+          content:
+            application/json:
+              schema:
+                description: List of user
+                type: array
+                minItems: 0
+                maxItems: 40
+                items:
+                  $ref: '#/components/schemas/UserIdentifier'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: The server encountered an internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
   /users/{userId}/following/{userIdToFollow}:
   
     parameters:
@@ -509,7 +699,7 @@ paths:
   
     put:
       tags:
-        - User
+        - Following
       summary: Follow an user
       description: Follow a specific user
       security:
@@ -538,7 +728,7 @@ paths:
 
     delete:
       tags:
-        - User
+        - Following
       summary: Unfollow an user
       description: Unfollow a specific user
       security:
@@ -549,6 +739,49 @@ paths:
         '204':
           description: User unfollowed successfully
         '400': 
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: The server encountered an internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+                
+  /users/{userId}/banned/:
+  
+    get:
+      tags:
+        - Ban
+      summary: Banned list
+      description: Get list of users banned by a specific user
+      parameters:
+        - name: userId
+          in: path
+          description: Identifier of user who banned
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserIdentifier'
+      security:
+        - bearerAuth: []
+      operationId: listBanned
+      
+      responses: 
+        '200':
+          description: List of banned returned succesfully
+          content:
+            application/json:
+              schema:
+                description: List of user
+                type: array
+                minItems: 0
+                maxItems: 40
+                items:
+                  $ref: '#/components/schemas/UserIdentifier'
+        '400':
           description: Invalid request
           content:
             application/json:
@@ -579,7 +812,7 @@ paths:
   
     put:
       tags:
-        - User
+        - Ban
       summary: Ban an user
       description: Ban a specific user
       security:
@@ -608,7 +841,7 @@ paths:
 
     delete:
       tags:
-        - User
+        - Ban
       summary: Unban an user
       description: Unban a specific user
       security:
