@@ -60,7 +60,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/UserIdentifier"
   
-  /home/:
+  /users/:
   
     get:
       tags:  
@@ -167,7 +167,7 @@ paths:
       description:  Change username of user of current session
       security:
         - bearerAuth: []
-      operationId: setMyUsername
+      operationId: setMyUserName
       parameters:
         - name: userId
           in: path
@@ -373,6 +373,8 @@ paths:
         - Comment
       summary: List comments
       description: List all comments of a photo
+      security:
+        - bearerAuth: []
       operationId: listComments
       responses: 
         '200':
@@ -453,6 +455,8 @@ paths:
         - Comment
       summary: Get specific comment
       description: Return a specific comment of a specific photo
+      security:
+        - bearerAuth: []
       operationId: getComment
       responses:
         '200':
@@ -535,6 +539,8 @@ paths:
         - Like
       summary: List likes
       description: List all likes assigned to a photo
+      security:
+        - bearerAuth: []
       operationId: listLikes
       parameters:
         - name: photoId
