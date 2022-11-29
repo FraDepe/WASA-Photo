@@ -125,6 +125,8 @@ paths:
         - User
       summary: Get user stream
       description: Get stream of all photos of a specific user
+      security:
+        - bearerAuth: []
       operationId: getUserStream
       parameters:
         - name: userId
