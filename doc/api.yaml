@@ -296,6 +296,8 @@ paths:
         - User
       summary: Find an user
       description: Find an user specifing the username
+      security:
+        - bearerAuth: []
       operationId: getUserProfile
       parameters:
         - name: username
