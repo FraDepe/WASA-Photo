@@ -916,7 +916,7 @@ components:
     Photo:   
       required:
         - photo_id
-        - photo_url
+        - photo_file
         - likes
         - date_time
         - comments
@@ -925,11 +925,12 @@ components:
       properties:
         photo_id:
           $ref: '#/components/schemas/Identifier'
-        photo_url:
-          description: URL for photo
+        photo_file:
+          description: File of the photo
           type: string
+          format: binary
           minLength: 1
-          maxLength: 500
+          maxLength: 99999
         likes:
           type: array
           minItems: 0
