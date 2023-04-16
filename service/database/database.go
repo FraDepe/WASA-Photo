@@ -36,9 +36,10 @@ import (
 	"fmt"
 )
 
-var ErrUserDoesNotExist = errors.New("User does not exist")
-var ErrInternalServer = errors.New("Internal server error")
-var ErrPhotoNotFound = errors.New("Photo not found")
+var ErrUserDoesNotExist = errors.New("user does not exist")
+var ErrInternalServer = errors.New("internal server error")
+var ErrPhotoNotFound = errors.New("photo not found")
+var ErrLikeNotFound = errors.New("like not found")
 
 // Fountain struct represent a fountain in every API call between this package and the outside world.
 // Note that the internal representation of fountain in the database might be different.
@@ -50,56 +51,59 @@ var ErrPhotoNotFound = errors.New("Photo not found")
 //}
 
 type User struct {
-	ID        string
+	ID        uint64
 	Username  string
-	Follower  float64
-	Following float64
-	Banned    float64
-	Photos    float64
+	Follower  uint64
+	Following uint64
+	Banned    uint64
+	Photos    uint64
 }
 
 type Photo struct {
-	ID        string
+	ID        uint64
+	User_id   uint64
 	Picture   []byte
-	Likes     int
+	Likes     uint64
 	Date_time string
-	Comments  []Comment
+	Comments  uint64
 }
 
 type Comment struct {
-	ID     string
-	Text   string
-	UserId string
+	ID      uint64
+	PhotoId uint64
+	Text    string
+	UserId  uint64
 }
 
 type Like struct {
-	PhotoId string
-	UserId  string
+	PhotoId uint64
+	UserId  uint64
 }
 
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
-	GetFollowingStream(User) ([]Photo, error)
+	DoLogin(string) (User, error)
+	GetFollowingStream(User, uint64) ([]Photo, error)
 	GetMyStream(User) ([]Photo, error)
-	SetMyUsername(string, string) error
+	SetMyUsername(string, uint64) error
 	UploadPhoto(Photo) (Photo, error)
-	ShowPhoto(string) (Photo, error)
-	DeletePhoto(string) error
+	ShowPhoto(uint64, uint64) (Photo, error)
+	DeletePhoto(uint64, uint64) error
 	GetUserProfile(string) (User, error)
-	ListComments(string) ([]Comment, error)
-	CommentPhoto(string) (Comment, error)
-	GetComment(string, string) (Comment, error)
-	ModifyComment(string, string) error
-	UncommentPhoto(string, string) error
-	ListLikes(string) ([]Like, error)
-	LikePhoto(string, string) (Like, error)
-	UnlikePhoto(string, string) error
-	ListFollowed(string) ([]string, error)     //forse ritorna tanti user boh
-	FollowerUser(string, string) (User, error) //porcata????
-	UnfollowUser(string, string) error
-	ListBanned(string) ([]string, error) //forse ritorna tanti user boh
-	BanUser(string, string) (User, error)
-	UnbanUser(string, string) error
+	ListComments(uint64, uint64) ([]Comment, error)
+	CommentPhoto(Comment) (Comment, error)
+	GetComment(uint64) (Comment, error)
+	// ModifyComment(string, string) error
+	UncommentPhoto(uint64, uint64) error
+	ListLikes(uint64, uint64) ([]Like, error)
+	LikePhoto(Like) (Like, error)
+	UnlikePhoto(uint64, uint64) error
+	ListFollowed(uint64, uint64) ([]User, error)
+	FollowUser(uint64, uint64) (User, error) //Perchè torno un user?
+	UnfollowUser(uint64, uint64) error
+	ListBanned(uint64) ([]User, error)
+	BanUser(uint64, uint64) (User, error) //Perchè torno un user?
+	UnbanUser(uint64, uint64) error
 
 	// Ping checks whether the database is available or not (in that case, an error will be returned)
 	Ping() error
@@ -118,15 +122,18 @@ func New(db *sql.DB) (AppDatabase, error) {
 
 	// Check if table exists. If not, the database is empty, and we need to create the structure
 	var tableName string
+
+	// USER
 	err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='users';`).Scan(&tableName)
 	if errors.Is(err, sql.ErrNoRows) {
 		sqlStmt := `CREATE TABLE users (
 			id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-			username TEXT NOT NULL,
-			follower FLOAT NOT NULL,
-			following FLOAT NOT NULL,
-			banned FLOAT NOT NULL,
-			photos FLOAT NOT NULL
+			username TEXT NOT NULL UNIQUE,
+			follower INTEGER NOT NULL,
+			following INTEGER NOT NULL,
+			banned INTEGER NOT NULL,
+			photos INTEGER NOT NULL,
+			PRIMARY KEY("id")
 			);`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
@@ -134,13 +141,18 @@ func New(db *sql.DB) (AppDatabase, error) {
 		}
 	}
 
+	// PHOTOS
 	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='photos';`).Scan(&tableName)
 	if errors.Is(err, sql.ErrNoRows) {
 		sqlStmt := `CREATE TABLE photos (
 			id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+			userid INTEGER NOT NULL
 			picture BLOB NOT NULL,
-			likes FLOAT NOT NULL,
-			date_time TEXT NOT NULL
+			likes INTEGER NOT NULL,
+			date_time TEXT NOT NULL,
+			comments INTEGER NOT NULL,
+			FOREIGN KEY (userid) REFERENCES users(id),
+			PRIMARY KEY("id")
 			);`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
@@ -148,12 +160,17 @@ func New(db *sql.DB) (AppDatabase, error) {
 		}
 	}
 
+	// COMMENTS
 	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='comments';`).Scan(&tableName)
 	if errors.Is(err, sql.ErrNoRows) {
 		sqlStmt := `CREATE TABLE comments (
 			id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+			photoid INTEGER NOT NULL
 			text TEXT NOT NULL,
-			userid INTEGER NOT NULL
+			userid INTEGER NOT NULL,
+			FOREIGN KEY (photoid) REFERENCES photos(id),
+			FOREIGN KEY (userid) REFERENCES users(id),
+			PRIMARY KEY("id")
 			);`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
@@ -161,13 +178,47 @@ func New(db *sql.DB) (AppDatabase, error) {
 		}
 	}
 
+	// LIKES
 	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='likes';`).Scan(&tableName)
 	if errors.Is(err, sql.ErrNoRows) {
 		sqlStmt := `CREATE TABLE likes (
 			photoid INTEGER NOT NULL,
 			userid INTEGER NOT NULL,
 			FOREIGN KEY (photoid) REFERENCES photos(id),
-			FOREIGN KEY (userid) REFERENCES users(id)
+			FOREIGN KEY (userid) REFERENCES users(id),
+			PRIMARY KEY("photoid", "userid")
+			);`
+		_, err = db.Exec(sqlStmt)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+	}
+
+	// FOLLOWS
+	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='likes';`).Scan(&tableName)
+	if errors.Is(err, sql.ErrNoRows) {
+		sqlStmt := `CREATE TABLE follows (
+			followerid INTEGER NOT NULL,
+			followedid INTEGER NOT NULL,
+			FOREIGN KEY (followerid) REFERENCES users(id),
+			FOREIGN KEY (followedid) REFERENCES users(id),
+			PRIMARY KEY("followerid", "followedid")
+			);`
+		_, err = db.Exec(sqlStmt)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+	}
+
+	// BANS
+	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='likes';`).Scan(&tableName)
+	if errors.Is(err, sql.ErrNoRows) {
+		sqlStmt := `CREATE TABLE bans (
+			userid INTEGER NOT NULL,
+			bannedid INTEGER NOT NULL,
+			FOREIGN KEY (userid) REFERENCES users(id),
+			FOREIGN KEY (bannedid) REFERENCES users(id),
+			PRIMARY KEY("userid", "bannedid")
 			);`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {

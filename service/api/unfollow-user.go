@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -9,32 +8,32 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	user_id := r.Header.Get("Authorization")
+func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
-	var user User
+	user_id := ps.ByName("userId")
 	userId, err := strconv.ParseUint(user_id, 10, 64)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	user.ID = userId
-
-	stream, err := rt.db.GetMyStream(user.ToDatabase())
+	logged_user := r.Header.Get("Authorization")
+	loggedUser, err := strconv.ParseUint(logged_user, 10, 64)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-
-	err = json.NewEncoder(w).Encode(stream)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+	if userId != loggedUser {
+		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 
-	defer r.Body.Close()
+	err = rt.db.UnfollowUser(loggedUser, userId)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("Can't follow the user")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
 }

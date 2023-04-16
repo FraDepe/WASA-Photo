@@ -1,8 +1,8 @@
 package database
 
-func (db *appdbimpl) DeletePhoto(id uint64, user_id uint64) error {
+func (db *appdbimpl) UncommentPhoto(id uint64, userid uint64) error {
 
-	rows, err := db.c.Query(`SELECT userid FROM photos WHERE id=?`, id)
+	rows, err := db.c.Query(`SELECT userid FROM comments WHERE id=?`, id)
 	if err != nil {
 		return nil
 	}
@@ -16,8 +16,8 @@ func (db *appdbimpl) DeletePhoto(id uint64, user_id uint64) error {
 		}
 	}
 
-	if actual_user_id == user_id {
-		res, err := db.c.Exec(`DELETE FROM photos WHERE id=?`, id)
+	if actual_user_id == userid {
+		res, err := db.c.Exec(`DELETE FROM comments WHERE id=?`, id)
 		if err != nil {
 			return err
 		}
@@ -28,13 +28,8 @@ func (db *appdbimpl) DeletePhoto(id uint64, user_id uint64) error {
 		} else if affected == 0 {
 			return ErrPhotoNotFound
 		}
+
 		return nil
 	}
-
-	// Forse dovrei gestire il caso in cui gli id non
-	// corrispondono
-
-	defer func() { _ = rows.Close() }()
 	return nil
-
 }

@@ -58,7 +58,7 @@ paths:
           content:
             application/json: 
               schema:
-                $ref: "#/components/schemas/UserIdentifier"
+                $ref: "#/components/schemas/Identifier"
   
   /users/{userId}/:
   
@@ -76,7 +76,7 @@ paths:
           description: Username of user
           required: true
           schema:
-            $ref: '#/components/schemas/UserIdentifier'
+            $ref: '#/components/schemas/Identifier'
       responses:
         '200':
           description: Stream page returned successfully
@@ -140,7 +140,7 @@ paths:
           description: Username of current user
           required: true
           schema:
-            $ref: '#/components/schemas/UserIdentifier'
+            $ref: '#/components/schemas/Identifier'
       requestBody:
         content:
           application/json:
@@ -181,7 +181,7 @@ paths:
           description: Username of current user
           required: true
           schema:
-            $ref: '#/components/schemas/UserIdentifier'
+            $ref: '#/components/schemas/Identifier'
       requestBody:
         content:
           image/png:
@@ -379,9 +379,14 @@ paths:
       operationId: commentPhoto
       requestBody:
         content:
-          application/json:
+          text/plain:
             schema:
-              $ref: '#/components/schemas/Comment'
+              type: string
+              minLength: 1
+              maxLength: 5000
+              pattern: '^.*?$'
+              description: A simple text
+              example: Sample text
       responses:
         '201':
           description: Photo commented successfully
@@ -446,34 +451,33 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
 
-    put: 
-      tags:
-        - Comment
-      summary: Modify a comment
-      description: Modify a specific comment
-      security:
-        - bearerAuth: []
-      operationId: modifyComment
-
-      responses:
-        '200':
-          description: Comment modified successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '400':
-          description: Invalid request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '500':
-          description: The server encountered an internal error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
+#    put: 
+#      tags:
+#        - Comment
+#      summary: Modify a comment
+#      description: Modify a specific comment
+#      security:
+#        - bearerAuth: []
+#      operationId: modifyComment
+#      responses:
+#        '200':
+#          description: Comment modified successfully
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/ApiResponse'
+#        '400':
+#          description: Invalid request
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/ApiResponse'
+#        '500':
+#          description: The server encountered an internal error
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/ApiResponse'
 
     delete:
       tags:
@@ -556,7 +560,7 @@ paths:
         description: Identifier of user who's leaving like
         required: true
         schema:
-          $ref: '#/components/schemas/UserIdentifier'
+          $ref: '#/components/schemas/Identifier'
 
     post:
       tags:
@@ -625,7 +629,7 @@ paths:
           description: Identifier of user who's following
           required: true
           schema:
-            $ref: '#/components/schemas/UserIdentifier'
+            $ref: '#/components/schemas/Identifier'
       security:
         - bearerAuth: []
       operationId: listFollowed
@@ -641,7 +645,7 @@ paths:
                 minItems: 0
                 maxItems: 40
                 items:
-                  $ref: '#/components/schemas/UserIdentifier'
+                  $ref: '#/components/schemas/Identifier'
         '400':
           description: Invalid request
           content:
@@ -663,13 +667,13 @@ paths:
         description: Identifier of user who's following
         required: true
         schema:
-          $ref: '#/components/schemas/UserIdentifier'
+          $ref: '#/components/schemas/Identifier'
       - name: userIdToFollow
         in: path
         description: Identifier of user to follow
         required: true
         schema:
-          $ref: '#/components/schemas/UserIdentifier'
+          $ref: '#/components/schemas/Identifier'
   
     put:
       tags:
@@ -738,7 +742,7 @@ paths:
           description: Identifier of user who banned
           required: true
           schema:
-            $ref: '#/components/schemas/UserIdentifier'
+            $ref: '#/components/schemas/Identifier'
       security:
         - bearerAuth: []
       operationId: listBanned
@@ -754,7 +758,7 @@ paths:
                 minItems: 0
                 maxItems: 40
                 items:
-                  $ref: '#/components/schemas/UserIdentifier'
+                  $ref: '#/components/schemas/Identifier'
         '400':
           description: Invalid request
           content:
@@ -776,13 +780,13 @@ paths:
         description: Identifier of user who's following
         required: true
         schema:
-          $ref: '#/components/schemas/UserIdentifier'
+          $ref: '#/components/schemas/Identifier'
       - name: userIdToBan
         in: path
         description: Identifier of user to follow
         required: true
         schema:
-          $ref: '#/components/schemas/UserIdentifier'
+          $ref: '#/components/schemas/Identifier'
   
     put:
       tags:
@@ -855,13 +859,13 @@ components:
       type: integer
       example: 6365 
 
-    UserIdentifier:
-      description: Unique identifier for users 
-      type: string
-      pattern: "[a-z0-9]+"
-      minLength: 3
-      maxLength: 16
-      example: abcdef012345
+#    UserIdentifier:
+#      description: Unique identifier for users 
+#      type: string
+#      pattern: "[a-z0-9]+"
+#      minLength: 3
+#      maxLength: 16
+#      example: abcdef012345
 
     Username:
       description: Name of an user
@@ -881,7 +885,7 @@ components:
       description: User of platform
       properties:
         id:
-          $ref: '#/components/schemas/UserIdentifier'
+          $ref: '#/components/schemas/Identifier'
         username:
           $ref: '#/components/schemas/Username'
         follower:
@@ -890,21 +894,21 @@ components:
           maxItems: 50
           description: List of people following this user
           items:
-            $ref: '#/components/schemas/UserIdentifier'
+            $ref: '#/components/schemas/Identifier'
         following:
           type: array
           minItems: 0
           maxItems: 50
           description: List of people this user is following
           items:
-            $ref: '#/components/schemas/UserIdentifier'
+            $ref: '#/components/schemas/Identifier'
         banned:
           type: array
           minItems: 0
           maxItems: 50
           description: List of user banned
           items:
-            $ref: "#/components/schemas/UserIdentifier"
+            $ref: "#/components/schemas/Identifier"
         photos:
           type: array
           minItems: 0
@@ -916,7 +920,7 @@ components:
     Photo:   
       required:
         - photo_id
-        - photo_file
+        - photo_url
         - likes
         - date_time
         - comments
@@ -964,7 +968,7 @@ components:
         comment_id: 
           $ref: '#/components/schemas/Identifier'
         userId:
-          $ref: '#/components/schemas/UserIdentifier'
+          $ref: '#/components/schemas/Identifier'
         text:
           type: string
           minLength: 1
@@ -983,7 +987,7 @@ components:
         photoId:
           $ref: '#/components/schemas/Identifier'
         user_Id:
-          $ref: '#/components/schemas/UserIdentifier'
+          $ref: '#/components/schemas/Identifier'
       
     ApiResponse:
       type: object

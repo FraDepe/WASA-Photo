@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
@@ -10,13 +11,26 @@ import (
 
 func (rt *_router) getFollowingStream(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
+	// We need the id of logged user to check if he is following or is banned
+	logged_user_id := r.Header.Get("Authorization")
+	loggedUserId, err := strconv.ParseUint(logged_user_id, 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	// Taking user id from parameters
 	var user User
-
 	user_id := ps.ByName("userId")
+	userId, err := strconv.ParseUint(user_id, 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	user.ID = userId
 
-	user.ID = user_id
-
-	stream, err := rt.db.GetFollowingStream(user.ToDatabase())
+	// Entering databse function
+	stream, err := rt.db.GetFollowingStream(user.ToDatabase(), loggedUserId)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

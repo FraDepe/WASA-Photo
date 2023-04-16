@@ -8,27 +8,23 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (rt *_router) deletePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	user_id := r.Header.Get("Authorization")
-	casted_user_id, err := strconv.ParseUint(user_id, 10, 64)
+	userid, err := strconv.ParseUint(user_id, 10, 64)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	photo_id := ps.ByName("photoId")
-	if photo_id == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	casted_photo_id, err := strconv.ParseUint(photo_id, 10, 64)
+	comment_id := ps.ByName("commentId")
+	commentid, err := strconv.ParseUint(comment_id, 10, 64)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	err = rt.db.DeletePhoto(casted_photo_id, casted_user_id)
+	err = rt.db.DeletePhoto(commentid, userid)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return

@@ -20,9 +20,9 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
+	photo.Comments = 0
 	photo.Likes = 0
 	photo.Date_time = time.Now().Format("2017-07-21T17:32:28Z")
-	//photo.Comments = []Comment
 
 	dbphoto, err := rt.db.UploadPhoto(photo.ToDatabase())
 	if err != nil {

@@ -9,19 +9,18 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	user_id := r.Header.Get("Authorization")
+func (rt *_router) listBanned(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
-	var user User
-	userId, err := strconv.ParseUint(user_id, 10, 64)
+	// We need the id of logged user
+	logged_user_id := r.Header.Get("Authorization")
+	loggedUserId, err := strconv.ParseUint(logged_user_id, 10, 64)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	user.ID = userId
+	user_list, err := rt.db.ListBanned(loggedUserId)
 
-	stream, err := rt.db.GetMyStream(user.ToDatabase())
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -29,12 +28,10 @@ func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httpro
 
 	w.Header().Set("Content-Type", "application/json")
 
-	err = json.NewEncoder(w).Encode(stream)
+	err = json.NewEncoder(w).Encode(user_list)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
-	defer r.Body.Close()
 
 }

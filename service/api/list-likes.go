@@ -9,7 +9,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (rt *_router) showPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) listLikes(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	// We need the id of logged user to check if he is banned
 	logged_user_id := r.Header.Get("Authorization")
@@ -20,25 +20,22 @@ func (rt *_router) showPhoto(w http.ResponseWriter, r *http.Request, ps httprout
 	}
 
 	photo_id := ps.ByName("photoId")
-	photoid, err := strconv.ParseUint(photo_id, 10, 64)
+	photoId, err := strconv.ParseUint(photo_id, 10, 64)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	dbphoto, err := rt.db.ShowPhoto(photoid, loggedUserId)
+	stream_like, err := rt.db.ListLikes(photoId, loggedUserId)
 
 	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
-	var photo Photo
-
-	photo.FromDatabase(dbphoto)
 
 	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(photo)
+
+	err = json.NewEncoder(w).Encode(stream_like)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

@@ -6,12 +6,12 @@ import "git.sapienzaapps.it/gamificationlab/wasa-fontanelle/service/database"
 // added to the struct to conform to the OpenAPI specifications regarding JSON key names.
 // Note: there is a similar struct in the database package. See Fountain.FromDatabase (below) to understand why.
 type User struct {
-	ID        string  `json:"id"`
-	Username  string  `json:"username"`
-	Follower  float64 `json:"follower"`
-	Following float64 `json:"following"`
-	Banned    float64 `json:"banned"`
-	Photos    float64 `json:"photos"`
+	ID        uint64 `json:"id"`
+	Username  string `json:"username"`
+	Follower  uint64 `json:"follower"`
+	Following uint64 `json:"following"`
+	Banned    uint64 `json:"banned"`
+	Photos    uint64 `json:"photos"`
 }
 
 // FromDatabase populates the struct with data from the database, overwriting all values.
@@ -53,15 +53,17 @@ func (u *User) ToDatabase() database.User {
 //}
 
 type Photo struct {
-	ID        string    `json:"id"`
-	Picture   []byte    `json:"picture"`
-	Likes     int       `json:"likes"`
-	Date_time string    `json:"date_time"`
-	Comments  []Comment `json:"comments"`
+	ID        uint64 `json:"id"`
+	User_id   uint64 `json:"user_id"`
+	Picture   []byte `json:"picture"`
+	Likes     uint64 `json:"likes"`
+	Date_time string `json:"date_time"`
+	Comments  uint64 `json:"comments"`
 }
 
 func (p *Photo) FromDatabase(photo database.Photo) {
 	p.ID = photo.ID
+	p.User_id = photo.User_id
 	p.Picture = photo.Picture
 	p.Likes = photo.Likes
 	p.Date_time = photo.Date_time
@@ -71,6 +73,7 @@ func (p *Photo) FromDatabase(photo database.Photo) {
 func (p *Photo) ToDatabase() database.Photo {
 	return database.Photo{
 		ID:        p.ID,
+		User_id:   p.User_id,
 		Picture:   p.Picture,
 		Likes:     p.Likes,
 		Date_time: p.Date_time,
@@ -79,28 +82,31 @@ func (p *Photo) ToDatabase() database.Photo {
 }
 
 type Comment struct {
-	ID     string `json:"id"`
-	Text   string `json:"text"`
-	UserId string `json:"userid"`
+	ID      uint64 `json:"id"`
+	PhotoId uint64 `json:"photoid"`
+	Text    string `json:"text"`
+	UserId  uint64 `json:"userid"`
 }
 
 func (c *Comment) FromDatabase(comment database.Comment) {
 	c.ID = comment.ID
+	c.PhotoId = comment.PhotoId
 	c.Text = comment.Text
 	c.UserId = comment.UserId
 }
 
 func (c *Comment) ToDatabase() database.Comment {
 	return database.Comment{
-		ID:     c.ID,
-		Text:   c.Text,
-		UserId: c.UserId,
+		ID:      c.ID,
+		PhotoId: c.PhotoId,
+		Text:    c.Text,
+		UserId:  c.UserId,
 	}
 }
 
 type Like struct {
-	PhotoId string `json:"photoid"`
-	UserId  string `json:"userid"`
+	PhotoId uint64 `json:"photoid"`
+	UserId  uint64 `json:"userid"`
 }
 
 func (l *Like) FromDatabase(like database.Like) {
