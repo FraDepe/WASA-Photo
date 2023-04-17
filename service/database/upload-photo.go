@@ -9,5 +9,12 @@ func (db *appdbimpl) UploadPhoto(p Photo) (Photo, error) {
 		return p, err
 	}
 
+	// Update photos value of the user
+	_, err = db.c.Exec(`UPDATE users SET photos=photos-1 WHERE id=?`, p.User_id)
+
+	if err != nil {
+		return p, err
+	}
+
 	return p, nil
 }

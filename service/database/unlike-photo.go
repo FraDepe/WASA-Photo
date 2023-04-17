@@ -16,5 +16,11 @@ func (db *appdbimpl) UnlikePhoto(u_id uint64, p_id uint64) error {
 		return ErrLikeNotFound
 	}
 
+	// Update likes value of the photo
+	_, err = db.c.Exec(`UPDATE photos SET likes=likes-1 WHERE id=?`, p_id)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

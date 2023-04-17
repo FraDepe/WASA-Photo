@@ -25,6 +25,16 @@ func (db *appdbimpl) UnfollowUser(logged_user uint64, user_id uint64) error {
 		if err != nil {
 			return err
 		}
+
+		// Update followed e follower values of the users
+		_, err = db.c.Exec(`UPDATE users SET followed=followed-1 WHERE id=?`, logged_user)
+		if err != nil {
+			return err
+		}
+		_, err = db.c.Exec(`UPDATE users SET follower=follower-1 WHERE id=?`, user_id)
+		if err != nil {
+			return err
+		}
 	}
 
 	defer func() { _ = rows.Close() }()

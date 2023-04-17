@@ -41,8 +41,14 @@ func (db *appdbimpl) CommentPhoto(c Comment) (Comment, error) {
 		if err != nil {
 			return c, err
 		}
-		defer func() { _ = rows.Close() }()
 
+		// Update comment value of the photo
+		_, err = db.c.Exec(`UPDATE photos SET comments=comments+1 WHERE id=?`, photo_id)
+
+		if err != nil {
+			return c, err
+		}
+		defer func() { _ = rows.Close() }()
 		return c, nil
 	}
 	defer func() { _ = rows.Close() }()

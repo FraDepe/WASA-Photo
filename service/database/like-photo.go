@@ -34,7 +34,12 @@ func (db *appdbimpl) LikePhoto(l Like) (Like, error) {
 	if len(exist) == 0 {
 		_, err = db.c.Exec(`INSERT INTO likes (photoid userid) VALUES (?, ?)`,
 			l.PhotoId, l.UserId)
+		if err != nil {
+			return l, err
+		}
 
+		// Update likes value of the photo
+		_, err = db.c.Exec(`UPDATE photos SET likes=likes+1 WHERE id=?`, l.PhotoId)
 		if err != nil {
 			return l, err
 		}

@@ -16,6 +16,20 @@ func (db *appdbimpl) UncommentPhoto(id uint64, userid uint64) error {
 		}
 	}
 
+	rows, err = db.c.Query(`SELECT photoid FROM comments WHERE id=?`, id)
+	if err != nil {
+		return nil
+	}
+
+	var photoid uint64
+
+	for rows.Next() {
+		err = rows.Scan(&photoid)
+		if err != nil {
+			return nil
+		}
+	}
+
 	if actual_user_id == userid {
 		res, err := db.c.Exec(`DELETE FROM comments WHERE id=?`, id)
 		if err != nil {
@@ -27,6 +41,13 @@ func (db *appdbimpl) UncommentPhoto(id uint64, userid uint64) error {
 			return err
 		} else if affected == 0 {
 			return ErrPhotoNotFound
+		}
+
+		// Update comment value of the photo
+		_, err = db.c.Exec(`UPDATE photos SET comments=comments-1 WHERE id=?`, photoid)
+
+		if err != nil {
+			return err
 		}
 
 		return nil

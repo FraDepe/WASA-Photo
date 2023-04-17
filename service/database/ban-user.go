@@ -27,6 +27,13 @@ func (db *appdbimpl) BanUser(logged_user uint64, user_id uint64) (User, error) {
 		if err != nil {
 			return user, err
 		}
+
+		// Update banned value of the user who's banning
+		_, err = db.c.Exec(`UPDATE users SET banned=banned+1 WHERE id=?`, logged_user)
+
+		if err != nil {
+			return user, err
+		}
 	}
 
 	defer func() { _ = rows.Close() }()
