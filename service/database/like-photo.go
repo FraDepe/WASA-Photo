@@ -24,10 +24,10 @@ func (db *appdbimpl) LikePhoto(l Like) (Like, error) {
 	for rows.Next() {
 		var id uint64
 		err = rows.Scan(&id)
-		exist = append(exist, id)
 		if err != nil {
 			return l, nil
 		}
+		exist = append(exist, id)
 	}
 
 	// If exist array is empty the guy who's liking is not banned and so he can likes

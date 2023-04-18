@@ -25,10 +25,10 @@ func (db *appdbimpl) ShowPhoto(photoid uint64, userid uint64) (Photo, error) {
 	for rows.Next() {
 		var id uint64
 		err = rows.Scan(&id)
-		exist = append(exist, id)
 		if err != nil {
 			return photo, nil
 		}
+		exist = append(exist, id)
 	}
 
 	// If exist array is empty, the guy who's asking for the photo, can receive it

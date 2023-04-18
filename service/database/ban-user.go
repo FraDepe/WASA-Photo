@@ -13,10 +13,10 @@ func (db *appdbimpl) BanUser(logged_user uint64, user_id uint64) (User, error) {
 	for rows.Next() {
 		var id uint64
 		err = rows.Scan(&id)
-		exist = append(exist, id)
 		if err != nil {
 			return user, nil
 		}
+		exist = append(exist, id)
 	}
 
 	// If exist array is empty the guy is not already banned so he can ban him

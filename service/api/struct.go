@@ -46,11 +46,11 @@ func (u *User) ToDatabase() database.User {
 // IsValid checks the validity of the content. In particular, coordinates should be in their range of validity, and the
 // status should be either FountainStatusGood or FountainStatusFaulty. Note that the ID is not checked, as fountains
 // read from requests have zero IDs as the user won't send us the ID in that way.
-//func (f *Fountain) IsValid() bool {
+// func (f *Fountain) IsValid() bool {
 //	return -90 <= f.Latitude && f.Latitude <= 90 &&
 //		-180 <= f.Longitude && f.Longitude <= 180 &&
 //		(f.Status == FountainStatusGood || f.Status == FountainStatusFaulty)
-//}
+// }
 
 type Photo struct {
 	ID        uint64 `json:"id"`

@@ -12,10 +12,10 @@ func (db *appdbimpl) ListFollowed(userId uint64, loggedUser uint64) ([]User, err
 	for rows.Next() {
 		var id uint64
 		err = rows.Scan(&id)
-		exist = append(exist, id)
 		if err != nil {
 			return nil, nil
 		}
+		exist = append(exist, id)
 	}
 
 	// If exist array is not empty, the guy who's asking for user list, can receive it

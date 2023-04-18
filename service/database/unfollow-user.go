@@ -11,10 +11,10 @@ func (db *appdbimpl) UnfollowUser(logged_user uint64, user_id uint64) error {
 	for rows.Next() {
 		var id uint64
 		err = rows.Scan(&id)
-		exist = append(exist, id)
 		if err != nil {
 			return nil
 		}
+		exist = append(exist, id)
 	}
 
 	// If exist array is not empty the guy is following so he can unfollow

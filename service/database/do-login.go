@@ -34,12 +34,12 @@ func (db *appdbimpl) DoLogin(u string) (User, error) {
 		}
 		user.ID = uint64(signed_user_id)
 
-		defer rows.Close()
+		defer func() { _ = rows.Close() }()
 		return user, nil
 	} else {
 		user.Username = u
 
-		defer rows.Close()
+		defer func() { _ = rows.Close() }()
 		return user, nil
 	}
 }

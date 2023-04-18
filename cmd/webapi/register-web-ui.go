@@ -1,13 +1,14 @@
-//go:build webui
+// go:build webui
 
 package main
 
 import (
 	"fmt"
-	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/webui"
 	"io/fs"
 	"net/http"
 	"strings"
+
+	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/webui"
 )
 
 func registerWebUI(hdl http.Handler) (http.Handler, error) {

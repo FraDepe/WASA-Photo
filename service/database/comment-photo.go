@@ -12,10 +12,10 @@ func (db *appdbimpl) CommentPhoto(c Comment) (Comment, error) {
 	}
 	var user_id_p uint64
 	for rows.Next() {
-		err = rows.Scan(&user_id_p)
 		if err != nil {
 			return c, nil
 		}
+		err = rows.Scan(&user_id_p)
 	}
 
 	// Check if the guy who is commenting is banned or no
@@ -27,10 +27,10 @@ func (db *appdbimpl) CommentPhoto(c Comment) (Comment, error) {
 	for rows.Next() {
 		var id uint64
 		err = rows.Scan(&id)
-		exist = append(exist, id)
 		if err != nil {
 			return c, nil
 		}
+		exist = append(exist, id)
 	}
 
 	// If exist array is empty the guy who's commenting is not banned and so he can comments
@@ -44,10 +44,10 @@ func (db *appdbimpl) CommentPhoto(c Comment) (Comment, error) {
 
 		// Update comment value of the photo
 		_, err = db.c.Exec(`UPDATE photos SET comments=comments+1 WHERE id=?`, photo_id)
-
 		if err != nil {
 			return c, err
 		}
+
 		defer func() { _ = rows.Close() }()
 		return c, nil
 	}

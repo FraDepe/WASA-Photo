@@ -12,10 +12,10 @@ func (db *appdbimpl) GetFollowingStream(u User, id uint64) ([]Photo, error) {
 	for rows.Next() {
 		var id uint64
 		err = rows.Scan(&id)
-		exist = append(exist, id)
 		if err != nil {
 			return nil, nil
 		}
+		exist = append(exist, id)
 	}
 
 	// Check if the guy who is asking for stream of photo is following or no
@@ -27,10 +27,10 @@ func (db *appdbimpl) GetFollowingStream(u User, id uint64) ([]Photo, error) {
 	for rows.Next() {
 		var id uint64
 		err = rows.Scan(&id)
-		exist = append(exist, id)
 		if err != nil {
 			return nil, nil
 		}
+		exist = append(exist, id)
 	}
 
 	// If exist array is empty the guy who's asking for stream of photo, can receive it

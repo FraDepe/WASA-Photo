@@ -43,12 +43,12 @@ var ErrLikeNotFound = errors.New("like not found")
 
 // Fountain struct represent a fountain in every API call between this package and the outside world.
 // Note that the internal representation of fountain in the database might be different.
-//type Fountain struct {
+// type Fountain struct {
 //	ID        uint64
 //	Latitude  float64
 //	Longitude float64
 //	Status    string
-//}
+// }
 
 type User struct {
 	ID        uint64
@@ -99,10 +99,10 @@ type AppDatabase interface {
 	LikePhoto(Like) (Like, error)
 	UnlikePhoto(uint64, uint64) error
 	ListFollowed(uint64, uint64) ([]User, error)
-	FollowUser(uint64, uint64) (User, error) //Perchè torno un user?
+	FollowUser(uint64, uint64) (User, error) // Perchè torno un user?
 	UnfollowUser(uint64, uint64) error
 	ListBanned(uint64) ([]User, error)
-	BanUser(uint64, uint64) (User, error) //Perchè torno un user?
+	BanUser(uint64, uint64) (User, error) // Perchè torno un user?
 	UnbanUser(uint64, uint64) error
 
 	// Ping checks whether the database is available or not (in that case, an error will be returned)
@@ -132,8 +132,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 			follower INTEGER NOT NULL,
 			following INTEGER NOT NULL,
 			banned INTEGER NOT NULL,
-			photos INTEGER NOT NULL,
-			PRIMARY KEY("id")
+			photos INTEGER NOT NULL
 			);`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
@@ -151,8 +150,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 			likes INTEGER NOT NULL,
 			date_time TEXT NOT NULL,
 			comments INTEGER NOT NULL,
-			FOREIGN KEY (userid) REFERENCES users(id),
-			PRIMARY KEY("id")
+			FOREIGN KEY (userid) REFERENCES users(id)
 			);`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
@@ -169,8 +167,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 			text TEXT NOT NULL,
 			userid INTEGER NOT NULL,
 			FOREIGN KEY (photoid) REFERENCES photos(id),
-			FOREIGN KEY (userid) REFERENCES users(id),
-			PRIMARY KEY("id")
+			FOREIGN KEY (userid) REFERENCES users(id)
 			);`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
