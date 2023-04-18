@@ -11,7 +11,7 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/users/:userid", rt.wrap(rt.getFollowingStream))
 	rt.router.GET("/users/myStream", rt.wrap(rt.getMyStream))
 	rt.router.PUT("/users/:userid/changeUsername", rt.wrap(rt.setMyUserName))
-	rt.router.POST("/users/:userid/uploadPhoto", rt.wrap(rt.uploadPhoto))
+	rt.router.POST("/users/:userid/photos", rt.wrap(rt.uploadPhoto))
 	rt.router.GET("/photos/:photoid", rt.wrap(rt.showPhoto))
 	rt.router.DELETE("/photos/:photoid", rt.wrap(rt.deletePhoto))
 	rt.router.GET("/users/findUser", rt.wrap(rt.getUserProfile))
