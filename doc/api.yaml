@@ -291,7 +291,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
 
-  /users/findUser:
+  /users/{username}/findUser:
 
     get:
       tags:
@@ -303,7 +303,7 @@ paths:
       operationId: getUserProfile
       parameters:
         - name: username
-          in: query
+          in: path
           description: Username of user we are looking for
           required: true
           schema:
