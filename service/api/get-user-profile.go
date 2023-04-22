@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/julienschmidt/httprouter"
 	"wasaphoto.uniroma1.it/wasaphoto/service/api/reqcontext"
@@ -10,13 +11,14 @@ import (
 
 func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
-	username := ps.ByName("username")
-	if username == "" {
-		w.WriteHeader(http.StatusBadRequest)
+	user_id := ps.ByName("userId")
+	userId, err := strconv.ParseUint(user_id, 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	dbuser, err := rt.db.GetUserProfile(username)
+	dbuser, err := rt.db.GetUserProfile(userId)
 
 	if err == nil {
 		w.WriteHeader(http.StatusNotFound)

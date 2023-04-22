@@ -83,13 +83,13 @@ type Like struct {
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
 	DoLogin(string) (User, error)
-	GetFollowingStream(User, uint64) ([]Photo, error)
+	//GetFollowingStream(User, uint64) ([]Photo, error)
 	GetMyStream(User) ([]Photo, error)
 	SetMyUsername(string, uint64) error
 	UploadPhoto(Photo) (Photo, error)
 	ShowPhoto(uint64, uint64) (Photo, error)
 	DeletePhoto(uint64, uint64) error
-	GetUserProfile(string) (User, error)
+	GetUserProfile(uint64) (User, error)
 	ListComments(uint64, uint64) ([]Comment, error)
 	CommentPhoto(Comment) (Comment, error)
 	GetComment(uint64) (Comment, error)

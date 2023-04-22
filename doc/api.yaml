@@ -64,16 +64,16 @@ paths:
   
     get:
       tags:  
-        - Home
-      summary: Get stream of following
-      description: Get stream of photos of following
+        - User
+      summary: Find an user
+      description: Get profile af a specific user
       security:
         - bearerAuth: []
-      operationId: getFollowingStream
+      operationId: getUserProfile
       parameters:
         - name: userId
           in: path
-          description: Username of user
+          description: Id of user
           required: true
           schema:
             $ref: '#/components/schemas/Identifier'
@@ -88,7 +88,13 @@ paths:
                 minItems: 0
                 maxItems: 40
                 items:
-                  $ref: '#/components/schemas/Photo'
+                  $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
         '500':
           description: The server encountered an internal error
           content:
@@ -96,7 +102,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
   
-  /users/myStream/:
+  /users:
 
     get:
       tags:  
@@ -280,43 +286,6 @@ paths:
           description: Photo deleted successfully
         '400':
           description: Invalid request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '500':
-          description: The server encountered an internal error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-
-  /users/{username}/findUser:
-
-    get:
-      tags:
-        - User
-      summary: Find an user
-      description: Find an user specifing the username
-      security:
-        - bearerAuth: []
-      operationId: getUserProfile
-      parameters:
-        - name: username
-          in: path
-          description: Username of user we are looking for
-          required: true
-          schema:
-            $ref: '#/components/schemas/Username'
-      responses:
-        '200':
-          description: User found successfully
-          content:
-            application/json:
-              schema: 
-                $ref: '#/components/schemas/User'
-        '404':
-          description: User not found
           content:
             application/json:
               schema:
