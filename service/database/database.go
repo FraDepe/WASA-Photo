@@ -145,7 +145,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 	if errors.Is(err, sql.ErrNoRows) {
 		sqlStmt := `CREATE TABLE photos (
 			id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-			userid INTEGER NOT NULL
+			userid INTEGER NOT NULL,
 			picture BLOB NOT NULL,
 			likes INTEGER NOT NULL,
 			date_time TEXT NOT NULL,
@@ -163,7 +163,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 	if errors.Is(err, sql.ErrNoRows) {
 		sqlStmt := `CREATE TABLE comments (
 			id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-			photoid INTEGER NOT NULL
+			photoid INTEGER NOT NULL,
 			text TEXT NOT NULL,
 			userid INTEGER NOT NULL,
 			FOREIGN KEY (photoid) REFERENCES photos(id),
