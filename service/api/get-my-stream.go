@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
+	"wasaphoto.uniroma1.it/wasaphoto/service/api/reqcontext"
 )
 
 func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {

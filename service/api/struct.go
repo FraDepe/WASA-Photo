@@ -1,6 +1,6 @@
 package api
 
-import "git.sapienzaapps.it/gamificationlab/wasa-fontanelle/service/database"
+import "wasaphoto.uniroma1.it/wasaphoto/service/database"
 
 // Fountain struct represent a fountain in every data exchange with the external world via REST API. JSON tags have been
 // added to the struct to conform to the OpenAPI specifications regarding JSON key names.

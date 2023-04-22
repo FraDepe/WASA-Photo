@@ -1,11 +1,12 @@
 package api
 
 import (
-	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/service/api/reqcontext"
+	"net/http"
+
 	"github.com/gofrs/uuid"
 	"github.com/julienschmidt/httprouter"
 	"github.com/sirupsen/logrus"
-	"net/http"
+	"wasaphoto.uniroma1.it/wasaphoto/service/api/reqcontext"
 )
 
 // httpRouterHandler is the signature for functions that accepts a reqcontext.RequestContext in addition to those

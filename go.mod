@@ -1,4 +1,4 @@
-module git.sapienzaapps.it/gamificationlab/wasa-fontanelle
+module gwasaphoto.uniroma1.it/wasaphoto
 
 go 1.17
 

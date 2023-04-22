@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/webui"
+	"wasaphoto.uniroma1.it/wasaphoto/webui"
 )
 
 func registerWebUI(hdl http.Handler) (http.Handler, error) {
