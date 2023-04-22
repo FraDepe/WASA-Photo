@@ -1,4 +1,4 @@
-module gwasaphoto.uniroma1.it/wasaphoto
+module wasaphoto.uniroma1.it/wasaphoto
 
 go 1.17
 
