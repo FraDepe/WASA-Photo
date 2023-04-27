@@ -8,8 +8,6 @@ info:
 
 tags:
   - name: Login
-  - name: Home
-    description: About homepage
   - name: User
     description: About users
   - name: Following
