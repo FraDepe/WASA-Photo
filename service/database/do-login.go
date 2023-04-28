@@ -3,21 +3,23 @@ package database
 func (db *appdbimpl) DoLogin(u string) (User, error) {
 
 	var user User
-	var avaible uint64
+	var avaible []uint64
 
-	rows, err := db.c.Query(`SELECT IFNULL(id, 0) FROM users WHERE username=?`, u)
+	rows, err := db.c.Query(`SELECT id FROM users WHERE username=?`, u)
 	if err != nil {
 		return user, err
 	}
 
 	for rows.Next() {
-		err = rows.Scan(&avaible)
+		var tmp uint64
+		err = rows.Scan(&tmp)
+		avaible = append(avaible, tmp)
 		if err != nil {
 			return user, err
 		}
 	}
 
-	if avaible == 0 {
+	if len(avaible) == 0 {
 		user.Follower = 0
 		user.Following = 0
 		user.Banned = 0
@@ -37,6 +39,7 @@ func (db *appdbimpl) DoLogin(u string) (User, error) {
 		defer func() { _ = rows.Close() }()
 		return user, nil
 	} else {
+
 		user.Username = u
 
 		defer func() { _ = rows.Close() }()

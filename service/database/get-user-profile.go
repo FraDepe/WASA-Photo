@@ -17,7 +17,7 @@ func (db *appdbimpl) GetUserProfile(userid uint64) (User, error) {
 	}
 
 	if user.ID != userid {
-		return user, err
+		return user, nil
 	}
 
 	defer func() { _ = rows.Close() }()
