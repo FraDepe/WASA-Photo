@@ -35,8 +35,8 @@ func (db *appdbimpl) CommentPhoto(c Comment) (Comment, error) {
 
 	// If exist array is empty the guy who's commenting is not banned and so he can comments
 	if len(exist) == 0 {
-		_, err := db.c.Exec(`INSERT INTO comments (id, text, userid) VALUES (NULL, ?, ?)`,
-			c.Text, c.UserId)
+		_, err := db.c.Exec(`INSERT INTO comments (id, photoid, text, userid) VALUES (NULL, ?, ?, ?)`,
+			c.PhotoId, c.Text, c.UserId)
 
 		if err != nil {
 			return c, err
