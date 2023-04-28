@@ -2,6 +2,7 @@ package database
 
 func (db *appdbimpl) UncommentPhoto(id uint64, userid uint64) error {
 
+	// Query to get userid of user who commented
 	rows, err := db.c.Query(`SELECT userid FROM comments WHERE id=?`, id)
 	if err != nil {
 		return nil
@@ -16,6 +17,7 @@ func (db *appdbimpl) UncommentPhoto(id uint64, userid uint64) error {
 		}
 	}
 
+	// Query to get photoid who got commented
 	rows, err = db.c.Query(`SELECT photoid FROM comments WHERE id=?`, id)
 	if err != nil {
 		return nil
