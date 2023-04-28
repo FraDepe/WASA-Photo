@@ -21,7 +21,7 @@ func (db *appdbimpl) FollowUser(logged_user uint64, user_id uint64) (User, error
 
 	// If exist array is empty the guy who's following is not banned and so he can follows
 	if len(exist) == 0 {
-		_, err = db.c.Exec(`INSERT INTO follows (followerid followedid) VALUES (?, ?)`,
+		_, err = db.c.Exec(`INSERT INTO follows (followerid, followedid) VALUES (?, ?)`,
 			logged_user, user_id)
 
 		if err != nil {
@@ -29,7 +29,7 @@ func (db *appdbimpl) FollowUser(logged_user uint64, user_id uint64) (User, error
 		}
 
 		// Update followed e follower values of the users
-		_, err = db.c.Exec(`UPDATE users SET followed=followed+1 WHERE id=?`, logged_user)
+		_, err = db.c.Exec(`UPDATE users SET following=following+1 WHERE id=?`, logged_user)
 		if err != nil {
 			return user, err
 		}
