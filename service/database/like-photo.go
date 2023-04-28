@@ -32,7 +32,7 @@ func (db *appdbimpl) LikePhoto(l Like) (Like, error) {
 
 	// If exist array is empty the guy who's liking is not banned and so he can likes
 	if len(exist) == 0 {
-		_, err = db.c.Exec(`INSERT INTO likes (photoid userid) VALUES (?, ?)`,
+		_, err = db.c.Exec(`INSERT INTO likes (photoid, userid) VALUES (?, ?)`,
 			l.PhotoId, l.UserId)
 		if err != nil {
 			return l, err
