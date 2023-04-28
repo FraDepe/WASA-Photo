@@ -3,7 +3,7 @@ package database
 func (db *appdbimpl) UnfollowUser(logged_user uint64, user_id uint64) error {
 
 	// Check if the guy is following or no
-	rows, err := db.c.Query(`SELECT userid FROM follows WHERE followedid=? and followerid=?`, user_id, logged_user)
+	rows, err := db.c.Query(`SELECT followerid FROM follows WHERE followedid=? and followerid=?`, user_id, logged_user)
 	if err != nil {
 		return nil
 	}
@@ -27,7 +27,7 @@ func (db *appdbimpl) UnfollowUser(logged_user uint64, user_id uint64) error {
 		}
 
 		// Update followed e follower values of the users
-		_, err = db.c.Exec(`UPDATE users SET followed=followed-1 WHERE id=?`, logged_user)
+		_, err = db.c.Exec(`UPDATE users SET following=following-1 WHERE id=?`, logged_user)
 		if err != nil {
 			return err
 		}
