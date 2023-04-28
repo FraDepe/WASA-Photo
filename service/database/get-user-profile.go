@@ -10,7 +10,7 @@ func (db *appdbimpl) GetUserProfile(userid uint64) (User, error) {
 	}
 
 	for rows.Next() {
-		err = rows.Scan(&user.ID, &user.Username, &user.Follower, &user.Following, &user.Banned, &user.Photos) // niente photos e banned????????
+		err = rows.Scan(&user.ID, &user.Username, &user.Follower, &user.Following, &user.Banned, &user.Photos)
 		if err != nil {
 			return user, err
 		}
