@@ -22,7 +22,7 @@ func (db *appdbimpl) ListFollowed(userId uint64, loggedUser uint64) ([]User, err
 	if len(exist) != 0 {
 		rows, err := db.c.Query(`	SELECT u.id, u.username, u.follower, u.following, u.banned, u.photos  
 									FROM users u, follows f
-									WHERE f.followerid=? and followed.id=u.id`, userId)
+									WHERE f.followerid=1 and f.followedid=u.id`, userId)
 		if err != nil {
 			return nil, err
 		}
