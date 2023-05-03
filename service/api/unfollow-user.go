@@ -29,7 +29,14 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	err = rt.db.UnfollowUser(loggedUser, userId)
+	user_id_to_unfollow := ps.ByName("useridtofollow")
+	userIdToUnfollow, err := strconv.ParseUint(user_id_to_unfollow, 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	err = rt.db.UnfollowUser(loggedUser, userIdToUnfollow)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Can't follow the user")
 		w.WriteHeader(http.StatusInternalServerError)
