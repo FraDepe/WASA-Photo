@@ -192,7 +192,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 	}
 
 	// FOLLOWS
-	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='likes';`).Scan(&tableName)
+	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='follows';`).Scan(&tableName)
 	if errors.Is(err, sql.ErrNoRows) {
 		sqlStmt := `CREATE TABLE follows (
 			followerid INTEGER NOT NULL,
@@ -208,7 +208,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 	}
 
 	// BANS
-	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='likes';`).Scan(&tableName)
+	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='bans';`).Scan(&tableName)
 	if errors.Is(err, sql.ErrNoRows) {
 		sqlStmt := `CREATE TABLE bans (
 			userid INTEGER NOT NULL,

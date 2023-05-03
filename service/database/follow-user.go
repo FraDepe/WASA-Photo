@@ -7,7 +7,8 @@ func (db *appdbimpl) FollowUser(logged_user uint64, user_id uint64) (User, error
 	// Check if the guy who is following is banned or no
 	rows, err := db.c.Query(`SELECT userid FROM bans WHERE userid=? and bannedid=?`, user_id, logged_user)
 	if err != nil {
-		return user, nil
+
+		return user, err
 	}
 	var exist []uint64
 	for rows.Next() {

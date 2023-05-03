@@ -28,7 +28,14 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	_, err = rt.db.FollowUser(loggedUser, userId)
+	user_id_to_follow := ps.ByName("useridtofollow")
+	userIdToFollow, err := strconv.ParseUint(user_id_to_follow, 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	_, err = rt.db.FollowUser(loggedUser, userIdToFollow)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Can't follow the user")
 		w.WriteHeader(http.StatusInternalServerError)
