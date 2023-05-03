@@ -1,7 +1,7 @@
 package api
 
 import (
-	"encoding/json"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -18,15 +18,14 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, ps http
 		return
 	}
 
-	var new_username string
-
-	err = json.NewDecoder(r.Body).Decode(&new_username)
+	username_buf, err := io.ReadAll(r.Body)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
+		w.WriteHeader(http.StatusInternalServerError)
 	}
 
-	err = rt.db.SetMyUsername(new_username, userid)
+	username := string(username_buf)
+
+	err = rt.db.SetMyUsername(username, userid)
 	if err != nil { // ???
 		w.WriteHeader(http.StatusInternalServerError)
 		return
