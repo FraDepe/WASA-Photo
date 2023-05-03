@@ -24,6 +24,7 @@ func (db *appdbimpl) DoLogin(u string) (User, error) {
 		user.Following = 0
 		user.Banned = 0
 		user.Photos = 0
+		user.Username = u
 
 		res, err := db.c.Exec(`INSERT INTO users (id, username, follower, following, banned, photos) VALUES (NULL, ?, ?, ?, ?, ?)`, u, user.Follower, user.Following, user.Banned, user.Photos)
 		if err != nil {
@@ -40,7 +41,14 @@ func (db *appdbimpl) DoLogin(u string) (User, error) {
 		return user, nil
 	} else {
 
-		user.Username = u
+		rows, err := db.c.Query(`SELECT id, username, follower, following, banned, photos FROM users WHERE username=?`, u)
+
+		for rows.Next() {
+			err = rows.Scan(&user.ID, &user.Username, &user.Follower, &user.Following, &user.Banned, &user.Photos)
+			if err != nil {
+				return user, err
+			}
+		}
 
 		defer func() { _ = rows.Close() }()
 		return user, nil
