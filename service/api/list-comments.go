@@ -19,7 +19,7 @@ func (rt *_router) listComments(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	photo_id := ps.ByName("photoId")
+	photo_id := ps.ByName("photoid")
 	photoId, err := strconv.ParseUint(photo_id, 10, 64)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

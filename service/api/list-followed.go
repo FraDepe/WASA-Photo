@@ -19,7 +19,7 @@ func (rt *_router) listFollowed(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	user_id := ps.ByName("userId")
+	user_id := ps.ByName("userid")
 	userId, err := strconv.ParseUint(user_id, 10, 64)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

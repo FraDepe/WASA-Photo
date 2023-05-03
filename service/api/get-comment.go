@@ -11,7 +11,7 @@ import (
 
 func (rt *_router) getComment(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
-	comment_id := ps.ByName("commentId")
+	comment_id := ps.ByName("commentid")
 	commentId, err := strconv.ParseUint(comment_id, 10, 64)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

@@ -10,8 +10,8 @@ import (
 
 func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
-	user_id := ps.ByName("userId")
-	photo_id := ps.ByName("photoId")
+	user_id := ps.ByName("userid")
+	photo_id := ps.ByName("photoid")
 	logged_user := r.Header.Get("Authorization")
 	userid, err := strconv.ParseUint(user_id, 10, 64)
 	if err != nil {

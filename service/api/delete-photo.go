@@ -17,7 +17,7 @@ func (rt *_router) deletePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	photo_id := ps.ByName("photoId")
+	photo_id := ps.ByName("photoid")
 	if photo_id == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		return

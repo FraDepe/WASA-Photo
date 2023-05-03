@@ -19,7 +19,7 @@ func (rt *_router) showPhoto(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	photo_id := ps.ByName("photoId")
+	photo_id := ps.ByName("photoid")
 	photoid, err := strconv.ParseUint(photo_id, 10, 64)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)

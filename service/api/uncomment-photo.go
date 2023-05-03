@@ -17,7 +17,7 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 
-	comment_id := ps.ByName("commentId")
+	comment_id := ps.ByName("commentid")
 	commentid, err := strconv.ParseUint(comment_id, 10, 64)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
