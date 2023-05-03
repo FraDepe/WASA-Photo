@@ -6,6 +6,7 @@ func (db *appdbimpl) ListFollowed(userId uint64, loggedUser uint64) ([]User, err
 	// Check if the guy who is asking for user list is following the user
 	rows, err := db.c.Query(`SELECT followerid FROM follows WHERE followerid=? and followedid=?`, loggedUser, userId)
 	if err != nil {
+		print("err")
 		return nil, nil
 	}
 	var exist []uint64
@@ -13,16 +14,18 @@ func (db *appdbimpl) ListFollowed(userId uint64, loggedUser uint64) ([]User, err
 		var id uint64
 		err = rows.Scan(&id)
 		if err != nil {
+			print("err2")
 			return nil, nil
 		}
 		exist = append(exist, id)
 	}
 
 	// If exist array is not empty, the guy who's asking for user list, can receive it
-	if len(exist) != 0 {
+	if len(exist) != 0 || userId == loggedUser {
+
 		rows, err := db.c.Query(`	SELECT u.id, u.username, u.follower, u.following, u.banned, u.photos  
 									FROM users u, follows f
-									WHERE f.followerid=1 and f.followedid=u.id`, userId)
+									WHERE f.followerid=? and f.followedid=u.id`, userId)
 		if err != nil {
 			return nil, err
 		}

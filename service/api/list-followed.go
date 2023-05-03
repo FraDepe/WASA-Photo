@@ -26,7 +26,7 @@ func (rt *_router) listFollowed(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	user_list, err := rt.db.ListComments(userId, loggedUserId)
+	user_list, err := rt.db.ListFollowed(userId, loggedUserId)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
