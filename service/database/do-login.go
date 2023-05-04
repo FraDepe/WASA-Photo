@@ -42,6 +42,9 @@ func (db *appdbimpl) DoLogin(u string) (User, error) {
 	} else {
 
 		rows, err := db.c.Query(`SELECT id, username, follower, following, banned, photos FROM users WHERE username=?`, u)
+		if err != nil {
+			return user, err
+		}
 
 		for rows.Next() {
 			err = rows.Scan(&user.ID, &user.Username, &user.Follower, &user.Following, &user.Banned, &user.Photos)

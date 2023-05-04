@@ -29,7 +29,14 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	err = rt.db.UnbanUser(loggedUser, userId)
+	user_id_to_unban := ps.ByName("useridtoban")
+	userIdToUnban, err := strconv.ParseUint(user_id_to_unban, 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	err = rt.db.UnbanUser(loggedUser, userIdToUnban)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Can't unban the user")
 		w.WriteHeader(http.StatusInternalServerError)
