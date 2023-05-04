@@ -45,6 +45,11 @@ func (db *appdbimpl) LikePhoto(l Like) (Like, error) {
 		}
 	}
 
+	err = rows.Err()
+	if err != nil {
+		return l, err
+	}
+
 	defer func() { _ = rows.Close() }()
 	return l, nil
 }

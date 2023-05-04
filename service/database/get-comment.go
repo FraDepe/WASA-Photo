@@ -16,6 +16,11 @@ func (db *appdbimpl) GetComment(commentId uint64) (Comment, error) {
 		}
 	}
 
+	err = rows.Err()
+	if err != nil {
+		return comment, err
+	}
+
 	defer func() { _ = rows.Close() }()
 	return comment, nil
 

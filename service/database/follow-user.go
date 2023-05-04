@@ -38,6 +38,17 @@ func (db *appdbimpl) FollowUser(logged_user uint64, user_id uint64) (User, error
 		if err != nil {
 			return user, err
 		}
+
+		err = rows.Err()
+		if err != nil {
+			return user, err
+		}
+
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return user, err
 	}
 
 	defer func() { _ = rows.Close() }()

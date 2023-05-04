@@ -41,8 +41,18 @@ func (db *appdbimpl) ListFollowed(userId uint64, loggedUser uint64) ([]User, err
 			return nil, err
 		}
 
+		err = rows.Err()
+		if err != nil {
+			return nil, err
+		}
+
 		defer func() { _ = rows.Close() }()
 		return user_list, nil
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, err
 	}
 
 	defer func() { _ = rows.Close() }()

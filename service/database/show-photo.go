@@ -48,9 +48,21 @@ func (db *appdbimpl) ShowPhoto(photoid uint64, userid uint64) (Photo, error) {
 		if photo.Picture == nil {
 			return photo, ErrPhotoNotFound
 		}
+
+		err = rows.Err()
+		if err != nil {
+			return photo, err
+		}
+
 		defer func() { _ = rows.Close() }()
 		return photo, nil
 	}
+
+	err = rows.Err()
+	if err != nil {
+		return photo, err
+	}
+
 	defer func() { _ = rows.Close() }()
 	return photo, nil
 }

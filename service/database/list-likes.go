@@ -36,8 +36,18 @@ func (db *appdbimpl) ListLikes(photoid uint64, userid uint64) ([]Like, error) {
 			return nil, err
 		}
 
+		err = rows.Err()
+		if err != nil {
+			return nil, err
+		}
+
 		defer func() { _ = rows.Close() }()
 		return stream_like, nil
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, err
 	}
 
 	defer func() { _ = rows.Close() }()

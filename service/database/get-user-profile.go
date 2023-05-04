@@ -20,6 +20,11 @@ func (db *appdbimpl) GetUserProfile(userid uint64) (User, error) {
 		return user, nil
 	}
 
+	err = rows.Err()
+	if err != nil {
+		return user, err
+	}
+
 	defer func() { _ = rows.Close() }()
 	return user, nil
 

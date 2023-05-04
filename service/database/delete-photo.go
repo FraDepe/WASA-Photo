@@ -36,11 +36,21 @@ func (db *appdbimpl) DeletePhoto(id uint64, user_id uint64) error {
 			return err
 		}
 
+		err = rows.Err()
+		if err != nil {
+			return err
+		}
+
 		return nil
 	}
 
 	// Forse dovrei gestire il caso in cui gli id non
 	// corrispondono
+
+	err = rows.Err()
+	if err != nil {
+		return err
+	}
 
 	defer func() { _ = rows.Close() }()
 	return nil

@@ -20,6 +20,11 @@ func (db *appdbimpl) GetMyStream(u User) ([]Photo, error) {
 		return nil, err
 	}
 
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+
 	defer func() { _ = rows.Close() }()
 	return stream_photo, nil
 }

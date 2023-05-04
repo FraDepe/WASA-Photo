@@ -23,6 +23,11 @@ func (db *appdbimpl) ListBanned(loggedUser uint64) ([]User, error) {
 		return nil, err
 	}
 
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+
 	defer func() { _ = rows.Close() }()
 	return user_list, nil
 

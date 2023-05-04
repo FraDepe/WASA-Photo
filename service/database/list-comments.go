@@ -51,8 +51,18 @@ func (db *appdbimpl) ListComments(photoid uint64, userid uint64) ([]Comment, err
 			return nil, err
 		}
 
+		err = rows.Err()
+		if err != nil {
+			return nil, err
+		}
+
 		defer func() { _ = rows.Close() }()
 		return stream_comments, nil
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, err
 	}
 
 	defer func() { _ = rows.Close() }()

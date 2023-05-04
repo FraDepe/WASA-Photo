@@ -48,9 +48,20 @@ func (db *appdbimpl) CommentPhoto(c Comment) (Comment, error) {
 			return c, err
 		}
 
+		err = rows.Err()
+		if err != nil {
+			return c, err
+		}
+
 		defer func() { _ = rows.Close() }()
 		return c, nil
 	}
+
+	err = rows.Err()
+	if err != nil {
+		return c, err
+	}
+
 	defer func() { _ = rows.Close() }()
 
 	return c, nil

@@ -37,6 +37,11 @@ func (db *appdbimpl) DoLogin(u string) (User, error) {
 		}
 		user.ID = uint64(signed_user_id)
 
+		err = rows.Err()
+		if err != nil {
+			return user, err
+		}
+
 		defer func() { _ = rows.Close() }()
 		return user, nil
 	} else {
@@ -51,6 +56,11 @@ func (db *appdbimpl) DoLogin(u string) (User, error) {
 			if err != nil {
 				return user, err
 			}
+		}
+
+		err = rows.Err()
+		if err != nil {
+			return user, err
 		}
 
 		defer func() { _ = rows.Close() }()

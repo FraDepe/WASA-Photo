@@ -36,6 +36,11 @@ func (db *appdbimpl) UnfollowUser(logged_user uint64, user_id uint64) error {
 		}
 	}
 
+	err = rows.Err()
+	if err != nil {
+		return err
+	}
+
 	defer func() { _ = rows.Close() }()
 	return nil
 }

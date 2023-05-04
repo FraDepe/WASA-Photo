@@ -52,7 +52,18 @@ func (db *appdbimpl) UncommentPhoto(id uint64, userid uint64) error {
 			return err
 		}
 
+		err = rows.Err()
+		if err != nil {
+			return err
+		}
+
 		return nil
 	}
+
+	err = rows.Err()
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
