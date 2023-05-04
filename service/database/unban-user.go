@@ -5,14 +5,14 @@ func (db *appdbimpl) UnbanUser(logged_user uint64, user_id uint64) error {
 	// Check if the guy is banned or no
 	rows, err := db.c.Query(`SELECT userid FROM bans WHERE bannedid=? and userid=?`, user_id, logged_user)
 	if err != nil {
-		return nil
+		return err
 	}
 	var exist []uint64
 	for rows.Next() {
 		var id uint64
 		err = rows.Scan(&id)
 		if err != nil {
-			return nil
+			return err
 		}
 		exist = append(exist, id)
 	}
@@ -21,14 +21,12 @@ func (db *appdbimpl) UnbanUser(logged_user uint64, user_id uint64) error {
 	if len(exist) != 0 {
 		_, err = db.c.Exec(`DELETE FROM bans WHERE bannedid=? and userid=?`,
 			user_id, logged_user)
-
 		if err != nil {
 			return err
 		}
 
 		// Update banned value of the user who's unbanning
 		_, err = db.c.Exec(`UPDATE users SET banned=banned-1 WHERE id=?`, logged_user)
-
 		if err != nil {
 			return err
 		}

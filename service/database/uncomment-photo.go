@@ -5,7 +5,7 @@ func (db *appdbimpl) UncommentPhoto(id uint64, userid uint64) error {
 	// Query to get userid of user who commented
 	rows, err := db.c.Query(`SELECT userid FROM comments WHERE id=?`, id)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	var actual_user_id uint64
@@ -13,14 +13,14 @@ func (db *appdbimpl) UncommentPhoto(id uint64, userid uint64) error {
 	for rows.Next() {
 		err = rows.Scan(&actual_user_id)
 		if err != nil {
-			return nil
+			return err
 		}
 	}
 
 	// Query to get photoid who got commented
 	rows, err = db.c.Query(`SELECT photoid FROM comments WHERE id=?`, id)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	var photoid uint64
@@ -28,7 +28,7 @@ func (db *appdbimpl) UncommentPhoto(id uint64, userid uint64) error {
 	for rows.Next() {
 		err = rows.Scan(&photoid)
 		if err != nil {
-			return nil
+			return err
 		}
 	}
 

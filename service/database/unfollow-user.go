@@ -5,14 +5,14 @@ func (db *appdbimpl) UnfollowUser(logged_user uint64, user_id uint64) error {
 	// Check if the guy is following or no
 	rows, err := db.c.Query(`SELECT followerid FROM follows WHERE followedid=? and followerid=?`, user_id, logged_user)
 	if err != nil {
-		return nil
+		return err
 	}
 	var exist []uint64
 	for rows.Next() {
 		var id uint64
 		err = rows.Scan(&id)
 		if err != nil {
-			return nil
+			return err
 		}
 		exist = append(exist, id)
 	}
@@ -21,7 +21,6 @@ func (db *appdbimpl) UnfollowUser(logged_user uint64, user_id uint64) error {
 	if len(exist) != 0 {
 		_, err = db.c.Exec(`DELETE FROM follows WHERE followedid=? and followerid=?`,
 			user_id, logged_user)
-
 		if err != nil {
 			return err
 		}

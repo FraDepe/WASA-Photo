@@ -7,7 +7,6 @@ func (db *appdbimpl) SetMyUsername(n_u string, id uint64) error {
 	}
 
 	affected, err := res.RowsAffected()
-
 	if err != nil {
 		return err
 	} else if affected == 0 {

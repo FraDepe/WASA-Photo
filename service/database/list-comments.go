@@ -6,27 +6,27 @@ func (db *appdbimpl) ListComments(photoid uint64, userid uint64) ([]Comment, err
 	// Get userid of the guy who uploaded the photo
 	rows, err := db.c.Query(`SELECT userid FROM photos WHERE id=?`, photoid)
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 	var user_id_p uint64
 	for rows.Next() {
 		err = rows.Scan(&user_id_p)
 		if err != nil {
-			return nil, nil
+			return nil, err
 		}
 	}
 
 	// Check if the guy who is asking for stream of comment is banned or no
 	rows, err = db.c.Query(`SELECT userid FROM bans WHERE userid=? and bannedid=?`, user_id_p, userid)
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 	var exist []uint64
 	for rows.Next() {
 		var id uint64
 		err = rows.Scan(&id)
 		if err != nil {
-			return nil, nil
+			return nil, err
 		}
 		exist = append(exist, id)
 	}

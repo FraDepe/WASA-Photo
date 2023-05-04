@@ -8,12 +8,12 @@ func (db *appdbimpl) CommentPhoto(c Comment) (Comment, error) {
 	// Get userid of the guy who uploaded the photo
 	rows, err := db.c.Query(`SELECT userid FROM photos WHERE id=?`, photo_id)
 	if err != nil {
-		return c, nil
+		return c, err
 	}
 	var user_id_p uint64
 	for rows.Next() {
 		if err != nil {
-			return c, nil
+			return c, err
 		}
 		err = rows.Scan(&user_id_p)
 	}
@@ -21,14 +21,14 @@ func (db *appdbimpl) CommentPhoto(c Comment) (Comment, error) {
 	// Check if the guy who is commenting is banned or no
 	rows, err = db.c.Query(`SELECT userid FROM bans WHERE userid=? and bannedid=?`, user_id_p, user_id)
 	if err != nil {
-		return c, nil
+		return c, err
 	}
 	var exist []uint64
 	for rows.Next() {
 		var id uint64
 		err = rows.Scan(&id)
 		if err != nil {
-			return c, nil
+			return c, err
 		}
 		exist = append(exist, id)
 	}

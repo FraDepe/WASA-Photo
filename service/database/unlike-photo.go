@@ -4,7 +4,6 @@ func (db *appdbimpl) UnlikePhoto(u_id uint64, p_id uint64) error {
 
 	res, err := db.c.Exec(`DELETE FROM likes WHERE photoid=?, userid=?`,
 		u_id, p_id)
-
 	if err != nil {
 		return err
 	}

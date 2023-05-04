@@ -15,7 +15,7 @@ func (db *appdbimpl) FollowUser(logged_user uint64, user_id uint64) (User, error
 		var id uint64
 		err = rows.Scan(&id)
 		if err != nil {
-			return user, nil
+			return user, err
 		}
 		exist = append(exist, id)
 	}

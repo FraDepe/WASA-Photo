@@ -4,7 +4,7 @@ func (db *appdbimpl) DeletePhoto(id uint64, user_id uint64) error {
 
 	rows, err := db.c.Query(`SELECT userid FROM photos WHERE id=?`, id)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	var actual_user_id uint64
@@ -12,7 +12,7 @@ func (db *appdbimpl) DeletePhoto(id uint64, user_id uint64) error {
 	for rows.Next() {
 		err = rows.Scan(&actual_user_id)
 		if err != nil {
-			return nil
+			return err
 		}
 	}
 

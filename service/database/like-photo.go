@@ -5,27 +5,27 @@ func (db *appdbimpl) LikePhoto(l Like) (Like, error) {
 	// Get userid of the guy who uploaded the photo
 	rows, err := db.c.Query(`SELECT userid FROM photos WHERE id=?`, l.PhotoId)
 	if err != nil {
-		return l, nil
+		return l, err
 	}
 	var user_id_p uint64
 	for rows.Next() {
 		err = rows.Scan(&user_id_p)
 		if err != nil {
-			return l, nil
+			return l, err
 		}
 	}
 
 	// Check if the guy who is liking is banned or no
 	rows, err = db.c.Query(`SELECT userid FROM bans WHERE userid=? and bannedid=?`, user_id_p, l.UserId)
 	if err != nil {
-		return l, nil
+		return l, err
 	}
 	var exist []uint64
 	for rows.Next() {
 		var id uint64
 		err = rows.Scan(&id)
 		if err != nil {
-			return l, nil
+			return l, err
 		}
 		exist = append(exist, id)
 	}

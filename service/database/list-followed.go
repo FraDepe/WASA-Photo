@@ -6,14 +6,14 @@ func (db *appdbimpl) ListFollowed(userId uint64, loggedUser uint64) ([]User, err
 	// Check if the guy who is asking for user list is following the user
 	rows, err := db.c.Query(`SELECT followerid FROM follows WHERE followerid=? and followedid=?`, loggedUser, userId)
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 	var exist []uint64
 	for rows.Next() {
 		var id uint64
 		err = rows.Scan(&id)
 		if err != nil {
-			return nil, nil
+			return nil, err
 		}
 		exist = append(exist, id)
 	}
