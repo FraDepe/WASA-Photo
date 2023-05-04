@@ -28,7 +28,14 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	_, err = rt.db.BanUser(loggedUser, userId)
+	user_id_to_ban := ps.ByName("useridtoban")
+	userIdToBan, err := strconv.ParseUint(user_id_to_ban, 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	_, err = rt.db.BanUser(loggedUser, userIdToBan)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Can't ban the user")
 		w.WriteHeader(http.StatusInternalServerError)
