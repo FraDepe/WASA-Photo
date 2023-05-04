@@ -19,18 +19,30 @@ func (rt *_router) listBanned(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	user_list, err := rt.db.ListBanned(loggedUserId)
-
+	user_id := ps.ByName("userid")
+	userId, err := strconv.ParseUint(user_id, 10, 64)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
+	if userId == loggedUserId {
+		user_list, err := rt.db.ListBanned(loggedUserId)
 
-	err = json.NewEncoder(w).Encode(user_list)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+
+		err = json.NewEncoder(w).Encode(user_list)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	} else {
+		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 
