@@ -45,18 +45,24 @@ func (db *appdbimpl) CommentPhoto(c Comment) (Comment, error) {
 
 	// If exist array is empty the guy who's commenting is not banned and so he can comments
 	if len(exist) == 0 {
-		_, err := db.c.Exec(`INSERT INTO comments (id, photoid, text, userid) VALUES (NULL, ?, ?, ?)`,
+		res, err := db.c.Exec(`INSERT INTO comments (id, photoid, text, userid) VALUES (NULL, ?, ?, ?)`,
 			c.PhotoId, c.Text, c.UserId)
 
 		if err != nil {
 			return c, err
 		}
 
+		comment_id, err := res.LastInsertId()
+
 		// Update comment value of the photo
 		_, err = db.c.Exec(`UPDATE photos SET comments=comments+1 WHERE id=?`, photo_id)
 		if err != nil {
 			return c, err
 		}
+
+		println(comment_id)
+		c.ID = uint64(comment_id)
+		println(c.ID)
 
 		defer func() { _ = rows.Close() }()
 		return c, nil

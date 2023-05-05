@@ -22,6 +22,15 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
+	photo_id := ps.ByName("photoid")
+	photoId, err := strconv.ParseUint(photo_id, 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	comment.PhotoId = photoId
+
 	// Extracting the comment to insert into the database
 	buffer, err := io.ReadAll(r.Body)
 	if err != nil {
