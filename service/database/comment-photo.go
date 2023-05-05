@@ -60,9 +60,7 @@ func (db *appdbimpl) CommentPhoto(c Comment) (Comment, error) {
 			return c, err
 		}
 
-		println(comment_id)
 		c.ID = uint64(comment_id)
-		println(c.ID)
 
 		defer func() { _ = rows.Close() }()
 		return c, nil
