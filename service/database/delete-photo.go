@@ -34,12 +34,12 @@ func (db *appdbimpl) DeletePhoto(id uint64, user_id uint64) error {
 			return ErrPhotoNotFound
 		}
 
-		res, err = db.c.Exec(`DELETE FROM likes WHERE photoid=?`, id)
+		_, err = db.c.Exec(`DELETE FROM likes WHERE photoid=?`, id)
 		if err != nil {
 			return err
 		}
 
-		res, err = db.c.Exec(`DELETE FROM comments WHERE photoid=?`, id)
+		_, err = db.c.Exec(`DELETE FROM comments WHERE photoid=?`, id)
 		if err != nil {
 			return err
 		}
