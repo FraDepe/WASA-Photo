@@ -43,7 +43,8 @@ func (db *appdbimpl) ShowPhoto(photoid uint64, userid uint64) (Photo, error) {
 
 	// If exist array is empty, the guy who's asking for the photo, can receive it
 	if len(exist) == 0 {
-		rows, err = db.c.Query(`SELECT id, userid, picture, likes, date_time FROM photos WHERE id=?`, photoid)
+
+		rows, err = db.c.Query(`SELECT id, userid, picture, likes, date_time, comments FROM photos WHERE id=?`, photoid)
 		if err != nil {
 			return photo, err
 		}

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/julienschmidt/httprouter"
@@ -13,6 +14,25 @@ import (
 func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	var photo Photo
 	var err error
+
+	logged_user_id := r.Header.Get("Authorization")
+	loggedUserId, err := strconv.ParseUint(logged_user_id, 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	user_id := ps.ByName("userid")
+	userId, err := strconv.ParseUint(user_id, 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if userId != loggedUserId {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
 
 	photo.Picture, err = io.ReadAll(r.Body)
 	if err != nil {
@@ -24,7 +44,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	photo.Likes = 0
 	photo.Date_time = time.Now().Format("2017-07-21T17:32:28Z")
 
-	dbphoto, err := rt.db.UploadPhoto(photo.ToDatabase())
+	dbphoto, err := rt.db.UploadPhoto(photo.ToDatabase(), userId)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Can't upload the photo")
 		w.WriteHeader(http.StatusInternalServerError)

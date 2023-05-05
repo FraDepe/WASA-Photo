@@ -86,7 +86,7 @@ type AppDatabase interface {
 	// GetFollowingStream(User, uint64) ([]Photo, error)
 	GetMyStream(User) ([]Photo, error)
 	SetMyUsername(string, uint64) error
-	UploadPhoto(Photo) (Photo, error)
+	UploadPhoto(Photo, uint64) (Photo, error)
 	ShowPhoto(uint64, uint64) (Photo, error)
 	DeletePhoto(uint64, uint64) error
 	GetUserProfile(uint64) (User, error)
