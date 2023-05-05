@@ -19,6 +19,11 @@ func (db *appdbimpl) BanUser(logged_user uint64, user_id uint64) (User, error) {
 		exist = append(exist, id)
 	}
 
+	err = rows.Err()
+	if err != nil {
+		return user, err
+	}
+
 	// If exist array is empty the guy is not already banned so he can ban him
 	if len(exist) == 0 {
 		_, err = db.c.Exec(`INSERT INTO bans (userid, bannedid) VALUES (?, ?)`,
@@ -35,16 +40,6 @@ func (db *appdbimpl) BanUser(logged_user uint64, user_id uint64) (User, error) {
 			return user, err
 		}
 
-		err = rows.Err()
-		if err != nil {
-			return user, err
-		}
-
-	}
-
-	err = rows.Err()
-	if err != nil {
-		return user, err
 	}
 
 	defer func() { _ = rows.Close() }()

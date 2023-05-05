@@ -16,6 +16,10 @@ func (db *appdbimpl) UnfollowUser(logged_user uint64, user_id uint64) error {
 		}
 		exist = append(exist, id)
 	}
+	err = rows.Err()
+	if err != nil {
+		return err
+	}
 
 	// If exist array is not empty the guy is following so he can unfollow
 	if len(exist) != 0 {
@@ -34,11 +38,6 @@ func (db *appdbimpl) UnfollowUser(logged_user uint64, user_id uint64) error {
 		if err != nil {
 			return err
 		}
-	}
-
-	err = rows.Err()
-	if err != nil {
-		return err
 	}
 
 	defer func() { _ = rows.Close() }()

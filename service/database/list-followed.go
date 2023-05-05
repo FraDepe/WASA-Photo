@@ -18,6 +18,11 @@ func (db *appdbimpl) ListFollowed(userId uint64, loggedUser uint64) ([]User, err
 		exist = append(exist, id)
 	}
 
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+
 	// If exist array is not empty, the guy who's asking for user list, can receive it
 	if len(exist) != 0 || userId == loggedUser {
 
@@ -37,9 +42,6 @@ func (db *appdbimpl) ListFollowed(userId uint64, loggedUser uint64) ([]User, err
 			}
 			user_list = append(user_list, user)
 		}
-		if err = rows.Err(); err != nil {
-			return nil, err
-		}
 
 		err = rows.Err()
 		if err != nil {
@@ -48,11 +50,6 @@ func (db *appdbimpl) ListFollowed(userId uint64, loggedUser uint64) ([]User, err
 
 		defer func() { _ = rows.Close() }()
 		return user_list, nil
-	}
-
-	err = rows.Err()
-	if err != nil {
-		return nil, err
 	}
 
 	defer func() { _ = rows.Close() }()

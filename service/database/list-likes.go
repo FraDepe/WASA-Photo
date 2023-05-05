@@ -16,6 +16,11 @@ func (db *appdbimpl) ListLikes(photoid uint64, userid uint64) ([]Like, error) {
 		}
 	}
 
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+
 	// Check if the guy who is asking for stream of like is the same who uploaded the photo
 	if user_id_p == userid {
 		rows, err := db.c.Query(`SELECT photoid, userid FROM likes WHERE photoid=?`, photoid)
@@ -32,9 +37,6 @@ func (db *appdbimpl) ListLikes(photoid uint64, userid uint64) ([]Like, error) {
 			}
 			stream_like = append(stream_like, like)
 		}
-		if err = rows.Err(); err != nil {
-			return nil, err
-		}
 
 		err = rows.Err()
 		if err != nil {
@@ -43,11 +45,6 @@ func (db *appdbimpl) ListLikes(photoid uint64, userid uint64) ([]Like, error) {
 
 		defer func() { _ = rows.Close() }()
 		return stream_like, nil
-	}
-
-	err = rows.Err()
-	if err != nil {
-		return nil, err
 	}
 
 	defer func() { _ = rows.Close() }()

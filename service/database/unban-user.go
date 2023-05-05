@@ -17,6 +17,11 @@ func (db *appdbimpl) UnbanUser(logged_user uint64, user_id uint64) error {
 		exist = append(exist, id)
 	}
 
+	err = rows.Err()
+	if err != nil {
+		return err
+	}
+
 	// If exist array is not empty the guy is banned so we can unban him
 	if len(exist) != 0 {
 		_, err = db.c.Exec(`DELETE FROM bans WHERE bannedid=? and userid=?`,
@@ -30,11 +35,6 @@ func (db *appdbimpl) UnbanUser(logged_user uint64, user_id uint64) error {
 		if err != nil {
 			return err
 		}
-	}
-
-	err = rows.Err()
-	if err != nil {
-		return err
 	}
 
 	defer func() { _ = rows.Close() }()

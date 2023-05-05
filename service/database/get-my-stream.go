@@ -16,9 +16,6 @@ func (db *appdbimpl) GetMyStream(u User) ([]Photo, error) {
 		}
 		stream_photo = append(stream_photo, ph)
 	}
-	if err = rows.Err(); err != nil {
-		return nil, err
-	}
 
 	err = rows.Err()
 	if err != nil {

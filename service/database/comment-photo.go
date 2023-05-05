@@ -18,6 +18,11 @@ func (db *appdbimpl) CommentPhoto(c Comment) (Comment, error) {
 		err = rows.Scan(&user_id_p)
 	}
 
+	err = rows.Err()
+	if err != nil {
+		return c, err
+	}
+
 	// Check if the guy who is commenting is banned or no
 	rows, err = db.c.Query(`SELECT userid FROM bans WHERE userid=? and bannedid=?`, user_id_p, user_id)
 	if err != nil {
@@ -31,6 +36,11 @@ func (db *appdbimpl) CommentPhoto(c Comment) (Comment, error) {
 			return c, err
 		}
 		exist = append(exist, id)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return c, err
 	}
 
 	// If exist array is empty the guy who's commenting is not banned and so he can comments
@@ -48,18 +58,8 @@ func (db *appdbimpl) CommentPhoto(c Comment) (Comment, error) {
 			return c, err
 		}
 
-		err = rows.Err()
-		if err != nil {
-			return c, err
-		}
-
 		defer func() { _ = rows.Close() }()
 		return c, nil
-	}
-
-	err = rows.Err()
-	if err != nil {
-		return c, err
 	}
 
 	defer func() { _ = rows.Close() }()

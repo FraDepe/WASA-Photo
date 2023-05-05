@@ -16,6 +16,11 @@ func (db *appdbimpl) ShowPhoto(photoid uint64, userid uint64) (Photo, error) {
 		}
 	}
 
+	err = rows.Err()
+	if err != nil {
+		return photo, err
+	}
+
 	// Check if the guy who is asking for the photo is banned or no
 	rows, err = db.c.Query(`SELECT userid FROM bans WHERE userid=? and bannedid=?`, user_id_p, userid)
 	if err != nil {
@@ -29,6 +34,11 @@ func (db *appdbimpl) ShowPhoto(photoid uint64, userid uint64) (Photo, error) {
 			return photo, err
 		}
 		exist = append(exist, id)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return photo, err
 	}
 
 	// If exist array is empty, the guy who's asking for the photo, can receive it
@@ -45,22 +55,17 @@ func (db *appdbimpl) ShowPhoto(photoid uint64, userid uint64) (Photo, error) {
 			}
 		}
 
-		if photo.Picture == nil {
-			return photo, ErrPhotoNotFound
-		}
-
 		err = rows.Err()
 		if err != nil {
 			return photo, err
 		}
 
+		if photo.Picture == nil {
+			return photo, ErrPhotoNotFound
+		}
+
 		defer func() { _ = rows.Close() }()
 		return photo, nil
-	}
-
-	err = rows.Err()
-	if err != nil {
-		return photo, err
 	}
 
 	defer func() { _ = rows.Close() }()

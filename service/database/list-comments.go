@@ -16,6 +16,11 @@ func (db *appdbimpl) ListComments(photoid uint64, userid uint64) ([]Comment, err
 		}
 	}
 
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+
 	// Check if the guy who is asking for stream of comment is banned or no
 	rows, err = db.c.Query(`SELECT userid FROM bans WHERE userid=? and bannedid=?`, user_id_p, userid)
 	if err != nil {
@@ -29,6 +34,11 @@ func (db *appdbimpl) ListComments(photoid uint64, userid uint64) ([]Comment, err
 			return nil, err
 		}
 		exist = append(exist, id)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, err
 	}
 
 	// If exist array is empty, the guy who's asking for stream of comment, can receive it
@@ -47,9 +57,6 @@ func (db *appdbimpl) ListComments(photoid uint64, userid uint64) ([]Comment, err
 			}
 			stream_comments = append(stream_comments, comment)
 		}
-		if err = rows.Err(); err != nil {
-			return nil, err
-		}
 
 		err = rows.Err()
 		if err != nil {
@@ -58,11 +65,6 @@ func (db *appdbimpl) ListComments(photoid uint64, userid uint64) ([]Comment, err
 
 		defer func() { _ = rows.Close() }()
 		return stream_comments, nil
-	}
-
-	err = rows.Err()
-	if err != nil {
-		return nil, err
 	}
 
 	defer func() { _ = rows.Close() }()

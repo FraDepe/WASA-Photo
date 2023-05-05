@@ -19,9 +19,6 @@ func (db *appdbimpl) ListBanned(loggedUser uint64) ([]User, error) {
 		}
 		user_list = append(user_list, user)
 	}
-	if err = rows.Err(); err != nil {
-		return nil, err
-	}
 
 	err = rows.Err()
 	if err != nil {

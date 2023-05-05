@@ -16,13 +16,13 @@ func (db *appdbimpl) GetUserProfile(userid uint64) (User, error) {
 		}
 	}
 
-	if user.ID != userid {
-		return user, nil
-	}
-
 	err = rows.Err()
 	if err != nil {
 		return user, err
+	}
+
+	if user.ID != userid {
+		return user, nil
 	}
 
 	defer func() { _ = rows.Close() }()

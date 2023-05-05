@@ -19,6 +19,11 @@ func (db *appdbimpl) DoLogin(u string) (User, error) {
 		}
 	}
 
+	err = rows.Err()
+	if err != nil {
+		return user, err
+	}
+
 	if len(avaible) == 0 {
 		user.Follower = 0
 		user.Following = 0
