@@ -24,12 +24,12 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 
-	err = rt.db.DeletePhoto(commentid, userid)
+	err = rt.db.UncommentPhoto(commentid, userid)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
 	w.WriteHeader(http.StatusNoContent)
-
+	return
 }

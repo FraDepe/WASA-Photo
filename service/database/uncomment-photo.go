@@ -8,10 +8,10 @@ func (db *appdbimpl) UncommentPhoto(id uint64, userid uint64) error {
 		return err
 	}
 
-	var actual_user_id uint64
+	var comment_user_id uint64
 
 	for rows.Next() {
-		err = rows.Scan(&actual_user_id)
+		err = rows.Scan(&comment_user_id)
 		if err != nil {
 			return err
 		}
@@ -42,7 +42,7 @@ func (db *appdbimpl) UncommentPhoto(id uint64, userid uint64) error {
 		return err
 	}
 
-	if actual_user_id == userid {
+	if comment_user_id == userid {
 		res, err := db.c.Exec(`DELETE FROM comments WHERE id=?`, id)
 		if err != nil {
 			return err
