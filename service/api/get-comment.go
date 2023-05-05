@@ -24,7 +24,7 @@ func (rt *_router) getComment(w http.ResponseWriter, r *http.Request, ps httprou
 
 	dbcomment, err := rt.db.GetComment(commentId)
 
-	if err == nil {
+	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
