@@ -51,6 +51,8 @@ func (db *appdbimpl) DeletePhoto(id uint64, user_id uint64) error {
 			return err
 		}
 
+		defer func() { _ = rows.Close() }()
+
 		return nil
 	}
 

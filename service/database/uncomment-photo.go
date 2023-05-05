@@ -67,8 +67,12 @@ func (db *appdbimpl) UncommentPhoto(id uint64, userid uint64) error {
 			return err
 		}
 
+		defer func() { _ = rows.Close() }()
+
 		return nil
 	}
+
+	defer func() { _ = rows.Close() }()
 
 	return nil
 }
