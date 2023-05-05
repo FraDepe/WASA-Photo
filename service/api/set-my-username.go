@@ -11,10 +11,23 @@ import (
 
 func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
+	logged_user_id := r.Header.Get("Authorization")
+
+	loggedUserId, err := strconv.ParseUint(logged_user_id, 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	user_id := ps.ByName("userid")
 	userid, err := strconv.ParseUint(user_id, 10, 64)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if loggedUserId != userid {
+		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 

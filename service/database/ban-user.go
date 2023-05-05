@@ -4,8 +4,26 @@ func (db *appdbimpl) BanUser(logged_user uint64, user_id uint64) (User, error) {
 
 	var user User
 
+	// Check if the guy exists
+	rows, err := db.c.Query(`SELECT id FROM users WHERE id=?`, user_id)
+	if err != nil {
+		return user, err
+	}
+	var tmp []uint64
+	for rows.Next() {
+		var id uint64
+		err = rows.Scan(&id)
+		if err != nil {
+			return user, err
+		}
+		tmp = append(tmp, id)
+	}
+	if len(tmp) == 0 {
+		return user, ErrUserDoesNotExist
+	}
+
 	// Check if the guy is already banned
-	rows, err := db.c.Query(`SELECT userid FROM bans WHERE userid=? and bannedid=?`, logged_user, user_id)
+	rows, err = db.c.Query(`SELECT userid FROM bans WHERE userid=? and bannedid=?`, logged_user, user_id)
 	if err != nil {
 		return user, err
 	}
@@ -40,8 +58,29 @@ func (db *appdbimpl) BanUser(logged_user uint64, user_id uint64) (User, error) {
 			return user, err
 		}
 
+		rows, err = db.c.Query(`SELECT id, username, follower, following, banned, photos FROM users WHERE id=?`, user_id)
+		if err != nil {
+			return user, err
+		}
+		for rows.Next() {
+			err = rows.Scan(&user.ID, &user.Username, &user.Follower, &user.Following, &user.Banned, &user.Photos)
+			if err != nil {
+				return user, err
+			}
+		}
+
+		err = rows.Err()
+		if err != nil {
+			return user, err
+		}
+
+		defer func() { _ = rows.Close() }()
+		return user, nil
+
+	} else {
+
+		defer func() { _ = rows.Close() }()
+		return user, ErrUserAlreadyBanned
 	}
 
-	defer func() { _ = rows.Close() }()
-	return user, nil
 }

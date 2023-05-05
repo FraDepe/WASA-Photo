@@ -18,9 +18,17 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 
-	dbuser, err := rt.db.GetUserProfile(userId)
+	logged_user := r.Header.Get("Authorization")
+	loggedUser, err := strconv.ParseUint(logged_user, 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	dbuser, err := rt.db.GetUserProfile(userId, loggedUser)
 
 	if err != nil {
+		ctx.Logger.WithError(err).Error("Can't get the user")
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}

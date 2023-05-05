@@ -36,10 +36,13 @@ import (
 	"fmt"
 )
 
-var ErrUserDoesNotExist = errors.New("user does not exist")
+var ErrUserDoesNotExist = errors.New("user doesn't exist")
 var ErrInternalServer = errors.New("internal server error")
 var ErrPhotoNotFound = errors.New("photo not found")
 var ErrLikeNotFound = errors.New("like not found")
+var ErrUserAlreadyBanned = errors.New("user already banned")
+var ErrUserNotFound = errors.New("user not found")
+var ErrBanned = errors.New("you can't do it")
 
 // Fountain struct represent a fountain in every API call between this package and the outside world.
 // Note that the internal representation of fountain in the database might be different.
@@ -89,7 +92,7 @@ type AppDatabase interface {
 	UploadPhoto(Photo, uint64) (Photo, error)
 	ShowPhoto(uint64, uint64) (Photo, error)
 	DeletePhoto(uint64, uint64) error
-	GetUserProfile(uint64) (User, error)
+	GetUserProfile(uint64, uint64) (User, error)
 	ListComments(uint64, uint64) ([]Comment, error)
 	CommentPhoto(Comment) (Comment, error)
 	GetComment(uint64) (Comment, error)

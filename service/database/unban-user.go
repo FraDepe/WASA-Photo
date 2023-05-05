@@ -2,8 +2,26 @@ package database
 
 func (db *appdbimpl) UnbanUser(logged_user uint64, user_id uint64) error {
 
+	// Check if the guy exists
+	rows, err := db.c.Query(`SELECT id FROM users WHERE id=?`, user_id)
+	if err != nil {
+		return err
+	}
+	var tmp []uint64
+	for rows.Next() {
+		var id uint64
+		err = rows.Scan(&id)
+		if err != nil {
+			return err
+		}
+		tmp = append(tmp, id)
+	}
+	if len(tmp) == 0 {
+		return ErrUserDoesNotExist
+	}
+
 	// Check if the guy is banned or no
-	rows, err := db.c.Query(`SELECT userid FROM bans WHERE bannedid=? and userid=?`, user_id, logged_user)
+	rows, err = db.c.Query(`SELECT userid FROM bans WHERE bannedid=? and userid=?`, user_id, logged_user)
 	if err != nil {
 		return err
 	}
@@ -35,8 +53,14 @@ func (db *appdbimpl) UnbanUser(logged_user uint64, user_id uint64) error {
 		if err != nil {
 			return err
 		}
+
+		defer func() { _ = rows.Close() }()
+		return nil
+
+	} else {
+
+		defer func() { _ = rows.Close() }()
+		return ErrUserNotFound
 	}
 
-	defer func() { _ = rows.Close() }()
-	return nil
 }

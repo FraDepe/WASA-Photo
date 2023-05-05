@@ -1,10 +1,38 @@
 package database
 
-func (db *appdbimpl) GetUserProfile(userid uint64) (User, error) {
+func (db *appdbimpl) GetUserProfile(userid uint64, loggedUser uint64) (User, error) {
 
 	var user User
 
-	rows, err := db.c.Query(`SELECT id, username, follower, following, banned, photos FROM users WHERE id=?`, userid)
+	// Check if the guy is banned or no
+	rows, err := db.c.Query(`SELECT userid FROM bans WHERE bannedid=? and userid=?`, loggedUser, userid)
+	if err != nil {
+		return user, err
+	}
+	var exist []uint64
+	for rows.Next() {
+		var id uint64
+		err = rows.Scan(&id)
+		if err != nil {
+			return user, err
+		}
+		exist = append(exist, id)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return user, err
+	}
+
+	if len(exist) != 0 { // You are banned
+
+		defer func() { _ = rows.Close() }()
+		return user, ErrBanned
+
+	}
+
+	// Fetch infos of the profile
+	rows, err = db.c.Query(`SELECT id, username, follower, following, banned, photos FROM users WHERE id=?`, userid)
 	if err != nil {
 		return user, err
 	}
@@ -14,6 +42,10 @@ func (db *appdbimpl) GetUserProfile(userid uint64) (User, error) {
 		if err != nil {
 			return user, err
 		}
+	}
+
+	if user.ID == 0 {
+		return user, ErrUserDoesNotExist
 	}
 
 	err = rows.Err()

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -35,11 +36,17 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	_, err = rt.db.BanUser(loggedUser, userIdToBan)
+	dbuser, err := rt.db.BanUser(loggedUser, userIdToBan)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Can't ban the user")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	var user User
+
+	user.FromDatabase(dbuser)
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(user)
 
 }
