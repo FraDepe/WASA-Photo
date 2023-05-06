@@ -1,6 +1,21 @@
-package database
+package utils
 
-import "net/http"
+import (
+	"errors"
+	"net/http"
+)
+
+// implementa globalmente
+var ErrUserDoesNotExist = errors.New("user doesn't exist")
+var ErrInternalServer = errors.New("internal server error")
+var ErrPhotoNotFound = errors.New("photo not found")
+var ErrLikeNotFound = errors.New("like not found")
+var ErrUserAlreadyBanned = errors.New("user already banned")
+var ErrUserNotFound = errors.New("user not found")
+var ErrBanned = errors.New("you can't do it")
+var ErrMustFollow = errors.New("you must follow before")
+var ErrPermissioneDenied = errors.New("permission denied")
+var ErrCommentNotFound = errors.New("comment not found")
 
 func errorTranslate(w http.ResponseWriter, err error) {
 	switch err {
