@@ -43,6 +43,7 @@ var ErrLikeNotFound = errors.New("like not found")
 var ErrUserAlreadyBanned = errors.New("user already banned")
 var ErrUserNotFound = errors.New("user not found")
 var ErrBanned = errors.New("you can't do it")
+var ErrMustFollow = errors.New("you must follow before")
 
 // Fountain struct represent a fountain in every API call between this package and the outside world.
 // Note that the internal representation of fountain in the database might be different.

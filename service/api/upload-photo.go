@@ -34,8 +34,15 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	photo.Picture, err = io.ReadAll(r.Body)
+	image, err := io.ReadAll(r.Body)
 	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if http.DetectContentType(image) == "image/png" || http.DetectContentType(image) == "image/jpg" || http.DetectContentType(image) == "image/jpeg" {
+		photo.Picture = image
+	} else {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

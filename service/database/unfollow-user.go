@@ -2,28 +2,9 @@ package database
 
 func (db *appdbimpl) UnfollowUser(logged_user uint64, user_id uint64) error {
 
-	// Check if the guy is following or no
-	rows, err := db.c.Query(`SELECT followerid FROM follows WHERE followedid=? and followerid=?`, user_id, logged_user)
-	if err != nil {
-		return err
-	}
-	var exist []uint64
-	for rows.Next() {
-		var id uint64
-		err = rows.Scan(&id)
-		if err != nil {
-			return err
-		}
-		exist = append(exist, id)
-	}
-	err = rows.Err()
-	if err != nil {
-		return err
-	}
-
 	// If exist array is not empty the guy is following so he can unfollow
-	if len(exist) != 0 {
-		_, err = db.c.Exec(`DELETE FROM follows WHERE followedid=? and followerid=?`,
+	if db.isFollowing(user_id, logged_user) {
+		_, err := db.c.Exec(`DELETE FROM follows WHERE followedid=? and followerid=?`,
 			user_id, logged_user)
 		if err != nil {
 			return err
@@ -38,8 +19,9 @@ func (db *appdbimpl) UnfollowUser(logged_user uint64, user_id uint64) error {
 		if err != nil {
 			return err
 		}
-	}
+		return nil
 
-	defer func() { _ = rows.Close() }()
-	return nil
+	} else {
+		return ErrMustFollow
+	}
 }
