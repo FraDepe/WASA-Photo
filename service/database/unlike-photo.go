@@ -2,6 +2,10 @@ package database
 
 func (db *appdbimpl) UnlikePhoto(u_id uint64, p_id uint64) error {
 
+	if !db.existence(u_id) {
+		return ErrUserDoesNotExist
+	}
+
 	res, err := db.c.Exec(`DELETE FROM likes WHERE photoid=? and userid=?`,
 		p_id, u_id)
 	if err != nil {

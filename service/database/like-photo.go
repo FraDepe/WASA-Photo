@@ -2,6 +2,10 @@ package database
 
 func (db *appdbimpl) LikePhoto(l Like) (Like, error) {
 
+	if !db.existence(l.UserId) {
+		return l, ErrUserDoesNotExist
+	}
+
 	// Get userid of the guy who uploaded the photo
 	rows, err := db.c.Query(`SELECT userid FROM photos WHERE id=?`, l.PhotoId)
 	if err != nil {
@@ -20,28 +24,13 @@ func (db *appdbimpl) LikePhoto(l Like) (Like, error) {
 		return l, err
 	}
 
+	if user_id_p == 0 {
+		defer func() { _ = rows.Close() }()
+		return l, ErrPhotoNotFound
+	}
+
 	// Check if the guy who is liking is banned or no
-	rows, err = db.c.Query(`SELECT userid FROM bans WHERE userid=? and bannedid=?`, user_id_p, l.UserId)
-	if err != nil {
-		return l, err
-	}
-	var exist []uint64
-	for rows.Next() {
-		var id uint64
-		err = rows.Scan(&id)
-		if err != nil {
-			return l, err
-		}
-		exist = append(exist, id)
-	}
-
-	err = rows.Err()
-	if err != nil {
-		return l, err
-	}
-
-	// If exist array is empty the guy who's liking is not banned and so he can likes
-	if len(exist) == 0 {
+	if !db.isBanned(user_id_p, l.UserId) {
 		_, err = db.c.Exec(`INSERT INTO likes (photoid, userid) VALUES (?, ?)`,
 			l.PhotoId, l.UserId)
 		if err != nil {

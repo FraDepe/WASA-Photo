@@ -21,6 +21,10 @@ func (db *appdbimpl) ListLikes(photoid uint64, userid uint64) ([]Like, error) {
 		return nil, err
 	}
 
+	if user_id_p == 0 {
+		return nil, ErrPhotoNotFound
+	}
+
 	// Check if the guy who is asking for stream of like is the same who uploaded the photo
 	if user_id_p == userid {
 		rows, err := db.c.Query(`SELECT photoid, userid FROM likes WHERE photoid=?`, photoid)
@@ -45,8 +49,8 @@ func (db *appdbimpl) ListLikes(photoid uint64, userid uint64) ([]Like, error) {
 
 		defer func() { _ = rows.Close() }()
 		return stream_like, nil
+	} else {
+		defer func() { _ = rows.Close() }()
+		return stream_like, ErrPermissioneDenied
 	}
-
-	defer func() { _ = rows.Close() }()
-	return stream_like, nil
 }

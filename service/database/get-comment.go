@@ -1,6 +1,6 @@
 package database
 
-func (db *appdbimpl) GetComment(commentId uint64) (Comment, error) {
+func (db *appdbimpl) GetComment(commentId uint64, loggedId uint64) (Comment, error) {
 
 	var comment Comment
 
@@ -19,6 +19,16 @@ func (db *appdbimpl) GetComment(commentId uint64) (Comment, error) {
 	err = rows.Err()
 	if err != nil {
 		return comment, err
+	}
+
+	if comment.ID == 0 {
+		defer func() { _ = rows.Close() }()
+		return comment, ErrCommentNotFound
+	}
+
+	if db.isBanned(comment.UserId, loggedId) {
+		defer func() { _ = rows.Close() }()
+		return comment, ErrBanned
 	}
 
 	defer func() { _ = rows.Close() }()

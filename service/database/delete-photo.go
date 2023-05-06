@@ -21,6 +21,11 @@ func (db *appdbimpl) DeletePhoto(id uint64, user_id uint64) error {
 		return err
 	}
 
+	if actual_user_id == 0 {
+		defer func() { _ = rows.Close() }()
+		return ErrPhotoNotFound
+	}
+
 	if actual_user_id == user_id {
 		res, err := db.c.Exec(`DELETE FROM photos WHERE id=?`, id)
 		if err != nil {
@@ -52,11 +57,9 @@ func (db *appdbimpl) DeletePhoto(id uint64, user_id uint64) error {
 		}
 
 		defer func() { _ = rows.Close() }()
-
 		return nil
+	} else {
+		defer func() { _ = rows.Close() }()
+		return ErrPermissioneDenied
 	}
-
-	defer func() { _ = rows.Close() }()
-	return nil
-
 }

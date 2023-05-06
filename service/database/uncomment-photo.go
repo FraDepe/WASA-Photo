@@ -22,6 +22,11 @@ func (db *appdbimpl) UncommentPhoto(id uint64, userid uint64) error {
 		return err
 	}
 
+	if comment_user_id == 0 {
+		defer func() { _ = rows.Close() }()
+		return ErrCommentNotFound
+	}
+
 	// Query to get photoid who got commented
 	rows, err = db.c.Query(`SELECT photoid FROM comments WHERE id=?`, id)
 	if err != nil {
@@ -40,6 +45,11 @@ func (db *appdbimpl) UncommentPhoto(id uint64, userid uint64) error {
 	err = rows.Err()
 	if err != nil {
 		return err
+	}
+
+	if photoid == 0 {
+		defer func() { _ = rows.Close() }()
+		return ErrPhotoNotFound
 	}
 
 	if comment_user_id == userid {
@@ -68,11 +78,10 @@ func (db *appdbimpl) UncommentPhoto(id uint64, userid uint64) error {
 		}
 
 		defer func() { _ = rows.Close() }()
-
 		return nil
+	} else {
+		defer func() { _ = rows.Close() }()
+		return ErrPermissioneDenied
 	}
 
-	defer func() { _ = rows.Close() }()
-
-	return nil
 }
