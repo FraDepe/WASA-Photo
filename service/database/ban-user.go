@@ -5,46 +5,13 @@ func (db *appdbimpl) BanUser(logged_user uint64, user_id uint64) (User, error) {
 	var user User
 
 	// Check if the guy exists
-	rows, err := db.c.Query(`SELECT id FROM users WHERE id=?`, user_id)
-	if err != nil {
-		return user, err
-	}
-	var tmp []uint64
-	for rows.Next() {
-		var id uint64
-		err = rows.Scan(&id)
-		if err != nil {
-			return user, err
-		}
-		tmp = append(tmp, id)
-	}
-	if len(tmp) == 0 {
+	if !db.existence(user_id) {
 		return user, ErrUserDoesNotExist
 	}
 
 	// Check if the guy is already banned
-	rows, err = db.c.Query(`SELECT userid FROM bans WHERE userid=? and bannedid=?`, logged_user, user_id)
-	if err != nil {
-		return user, err
-	}
-	var exist []uint64
-	for rows.Next() {
-		var id uint64
-		err = rows.Scan(&id)
-		if err != nil {
-			return user, err
-		}
-		exist = append(exist, id)
-	}
-
-	err = rows.Err()
-	if err != nil {
-		return user, err
-	}
-
-	// If exist array is empty the guy is not already banned so he can ban him
-	if len(exist) == 0 {
-		_, err = db.c.Exec(`INSERT INTO bans (userid, bannedid) VALUES (?, ?)`,
+	if !db.isBanned(logged_user, user_id) {
+		_, err := db.c.Exec(`INSERT INTO bans (userid, bannedid) VALUES (?, ?)`,
 			logged_user, user_id)
 
 		if err != nil {
@@ -58,7 +25,7 @@ func (db *appdbimpl) BanUser(logged_user uint64, user_id uint64) (User, error) {
 			return user, err
 		}
 
-		rows, err = db.c.Query(`SELECT id, username, follower, following, banned, photos FROM users WHERE id=?`, user_id)
+		rows, err := db.c.Query(`SELECT id, username, follower, following, banned, photos FROM users WHERE id=?`, user_id)
 		if err != nil {
 			return user, err
 		}
@@ -78,8 +45,6 @@ func (db *appdbimpl) BanUser(logged_user uint64, user_id uint64) (User, error) {
 		return user, nil
 
 	} else {
-
-		defer func() { _ = rows.Close() }()
 		return user, ErrUserAlreadyBanned
 	}
 
