@@ -22,27 +22,7 @@ func (db *appdbimpl) ShowPhoto(photoid uint64, userid uint64) (Photo, error) {
 	}
 
 	// Check if the guy who is asking for the photo is banned or no
-	rows, err = db.c.Query(`SELECT userid FROM bans WHERE userid=? and bannedid=?`, user_id_p, userid)
-	if err != nil {
-		return photo, err
-	}
-	var exist []uint64
-	for rows.Next() {
-		var id uint64
-		err = rows.Scan(&id)
-		if err != nil {
-			return photo, err
-		}
-		exist = append(exist, id)
-	}
-
-	err = rows.Err()
-	if err != nil {
-		return photo, err
-	}
-
-	// If exist array is empty, the guy who's asking for the photo, can receive it
-	if len(exist) == 0 {
+	if !db.isBanned(user_id_p, userid) {
 
 		rows, err = db.c.Query(`SELECT id, userid, picture, likes, date_time, comments FROM photos WHERE id=?`, photoid)
 		if err != nil {
@@ -67,8 +47,9 @@ func (db *appdbimpl) ShowPhoto(photoid uint64, userid uint64) (Photo, error) {
 
 		defer func() { _ = rows.Close() }()
 		return photo, nil
+	} else {
+		defer func() { _ = rows.Close() }()
+		return photo, ErrBanned
 	}
 
-	defer func() { _ = rows.Close() }()
-	return photo, nil
 }
