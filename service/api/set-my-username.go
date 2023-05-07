@@ -35,9 +35,14 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, ps http
 	username_buf, err := io.ReadAll(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	username := string(username_buf)
+	if !utils.ValidUsername(username) {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
 	err = rt.db.SetMyUsername(username, userid)
 	if err != nil {
@@ -46,4 +51,5 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, ps http
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+	return
 }

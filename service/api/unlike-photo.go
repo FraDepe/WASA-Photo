@@ -40,6 +40,7 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		}
 	} else {
 		w.WriteHeader(http.StatusForbidden)
+		return
 	}
 
 }

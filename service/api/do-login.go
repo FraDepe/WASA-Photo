@@ -15,9 +15,15 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 	username_buf, err := io.ReadAll(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	username := string(username_buf)
+	if !utils.ValidUsername(username) {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	var user User
 	user.Username = username
 
@@ -31,5 +37,5 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 	user.FromDatabase(dbuser)
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(user)
-
+	return
 }

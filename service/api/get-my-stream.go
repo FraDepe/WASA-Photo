@@ -37,5 +37,5 @@ func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 
 	defer r.Body.Close()
-
+	return
 }

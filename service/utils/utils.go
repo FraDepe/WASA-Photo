@@ -3,6 +3,7 @@ package utils
 import (
 	"errors"
 	"net/http"
+	"regexp"
 )
 
 // implementa globalmente
@@ -42,5 +43,14 @@ func ErrorTranslate(w http.ResponseWriter, err error) {
 		w.WriteHeader(http.StatusNotFound)
 	default:
 		w.WriteHeader(http.StatusInternalServerError)
+	}
+}
+
+func ValidUsername(username string) bool {
+	isValid := regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString(username)
+	if isValid && len(username) >= 3 {
+		return true
+	} else {
+		return false
 	}
 }

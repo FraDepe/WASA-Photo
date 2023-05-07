@@ -49,5 +49,5 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	user.FromDatabase(dbuser)
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(user)
-
+	return
 }
