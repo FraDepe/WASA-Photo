@@ -1,9 +1,10 @@
 package database
 
-func (db *appdbimpl) GetMyStream(u User) ([]Photo, error) {
+func (db *appdbimpl) GetMyStream(user uint64) ([]Photo, error) {
 	var stream_photo []Photo
 
-	rows, err := db.c.Query(`SELECT id, userid, picture, likes, date_time, comments FROM photos WHERE userid=?`, u.ID)
+	rows, err := db.c.Query(`SELECT id, userid, picture, likes, date_time, comments FROM photos p, follows f 
+							 WHERE ?=f.followerid and f.followedid=p.userid`, user)
 	if err != nil {
 		return nil, err
 	}

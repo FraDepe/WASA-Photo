@@ -91,7 +91,7 @@ type Like struct {
 type AppDatabase interface {
 	DoLogin(string) (User, error)
 	// GetFollowingStream(User, uint64) ([]Photo, error)
-	GetMyStream(User) ([]Photo, error)
+	GetMyStream(uint64) ([]Photo, error)
 	SetMyUsername(string, uint64) error
 	UploadPhoto(Photo, uint64) (Photo, error)
 	ShowPhoto(uint64, uint64) (Photo, error)

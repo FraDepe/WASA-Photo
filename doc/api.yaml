@@ -101,14 +101,14 @@ paths:
     get:
       tags:  
         - User
-      summary: Get my stream
-      description: Get my stream of all photos
+      summary: Get my stream of following
+      description: Get stream of following photos
       security:
         - bearerAuth: []
       operationId: getMyStream
       responses:
         '200':
-          description: Profile page returned successfully
+          description: Stream returned successfully
           content:
             application/json:
               schema:

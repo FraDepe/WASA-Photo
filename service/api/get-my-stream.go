@@ -11,18 +11,16 @@ import (
 )
 
 func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+
 	user_id := r.Header.Get("Authorization")
 
-	var user User
 	userId, err := strconv.ParseUint(user_id, 10, 64)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	user.ID = userId
-
-	stream, err := rt.db.GetMyStream(user.ToDatabase())
+	stream, err := rt.db.GetMyStream(userId)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Can't get the stream")
 		utils.ErrorTranslate(w, err)
