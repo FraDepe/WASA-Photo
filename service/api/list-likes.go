@@ -30,6 +30,7 @@ func (rt *_router) listLikes(w http.ResponseWriter, r *http.Request, ps httprout
 	stream_like, err := rt.db.ListLikes(photoId, loggedUserId)
 
 	if err != nil {
+		ctx.Logger.WithError(err).Error("Can't list likes")
 		utils.ErrorTranslate(w, err)
 		return
 	}

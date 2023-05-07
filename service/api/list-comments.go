@@ -29,6 +29,7 @@ func (rt *_router) listComments(w http.ResponseWriter, r *http.Request, ps httpr
 
 	stream_comments, err := rt.db.ListComments(photoId, loggedUserId)
 	if err != nil {
+		ctx.Logger.WithError(err).Error("Can't list comments")
 		utils.ErrorTranslate(w, err)
 		return
 	}

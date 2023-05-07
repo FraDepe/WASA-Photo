@@ -46,6 +46,7 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, ps http
 
 	err = rt.db.SetMyUsername(username, userid)
 	if err != nil {
+		ctx.Logger.WithError(err).Error("Can't change username")
 		utils.ErrorTranslate(w, err)
 		return
 	}

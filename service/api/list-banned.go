@@ -31,6 +31,7 @@ func (rt *_router) listBanned(w http.ResponseWriter, r *http.Request, ps httprou
 		user_list, err := rt.db.ListBanned(loggedUserId)
 
 		if err != nil {
+			ctx.Logger.WithError(err).Error("Can't list banned")
 			utils.ErrorTranslate(w, err)
 			return
 		}

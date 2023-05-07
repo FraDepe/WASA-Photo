@@ -30,6 +30,7 @@ func (rt *_router) showPhoto(w http.ResponseWriter, r *http.Request, ps httprout
 	dbphoto, err := rt.db.ShowPhoto(photoid, loggedUserId)
 
 	if err != nil {
+		ctx.Logger.WithError(err).Error("Can't load the photo")
 		utils.ErrorTranslate(w, err)
 		return
 	}

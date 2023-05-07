@@ -29,6 +29,7 @@ func (rt *_router) getComment(w http.ResponseWriter, r *http.Request, ps httprou
 	dbcomment, err := rt.db.GetComment(commentId, loggedUserId)
 
 	if err != nil {
+		ctx.Logger.WithError(err).Error("Can't get the comment")
 		utils.ErrorTranslate(w, err)
 		return
 	}

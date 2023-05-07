@@ -29,7 +29,7 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	dbuser, err := rt.db.GetUserProfile(userId, loggedUser)
 
 	if err != nil {
-		ctx.Logger.WithError(err).Error("Can't get the user")
+		ctx.Logger.WithError(err).Error("Can't get the profile")
 		utils.ErrorTranslate(w, err)
 		return
 	}

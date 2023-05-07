@@ -24,6 +24,7 @@ func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httpro
 
 	stream, err := rt.db.GetMyStream(user.ToDatabase())
 	if err != nil {
+		ctx.Logger.WithError(err).Error("Can't get the stream")
 		utils.ErrorTranslate(w, err)
 		return
 	}

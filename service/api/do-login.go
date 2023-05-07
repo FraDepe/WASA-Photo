@@ -29,7 +29,7 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 
 	dbuser, err := rt.db.DoLogin(username)
 	if err != nil {
-		ctx.Logger.WithError(err).Error("Can't locate user")
+		ctx.Logger.WithError(err).Error("Can't find or create the user")
 		utils.ErrorTranslate(w, err)
 		return
 	}

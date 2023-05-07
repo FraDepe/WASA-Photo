@@ -30,7 +30,7 @@ func (rt *_router) listFollowed(w http.ResponseWriter, r *http.Request, ps httpr
 	user_list, err := rt.db.ListFollowed(userId, loggedUserId)
 
 	if err != nil {
-		ctx.Logger.WithError(err).Error("Can't get the list")
+		ctx.Logger.WithError(err).Error("Can't list followed")
 		utils.ErrorTranslate(w, err)
 		return
 	}

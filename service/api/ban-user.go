@@ -44,6 +44,13 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
+	err = rt.db.UnfollowUser(userIdToBan, loggedUser)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("Can't ban the user")
+		utils.ErrorTranslate(w, err)
+		return
+	}
+
 	var user User
 
 	user.FromDatabase(dbuser)

@@ -7,7 +7,7 @@ func (db *appdbimpl) GetUserProfile(userid uint64, loggedUser uint64) (User, err
 	var user User
 
 	// Check if the guy is banned or no
-	if db.isBanned(loggedUser, userid) {
+	if db.isBanned(userid, loggedUser) {
 		return user, utils.ErrBanned
 
 	}

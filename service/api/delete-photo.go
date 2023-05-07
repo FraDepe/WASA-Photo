@@ -31,6 +31,7 @@ func (rt *_router) deletePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 
 	err = rt.db.DeletePhoto(casted_photo_id, casted_user_id)
 	if err != nil {
+		ctx.Logger.WithError(err).Error("Can't delete the photo")
 		utils.ErrorTranslate(w, err)
 		return
 	}

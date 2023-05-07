@@ -27,6 +27,7 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 
 	err = rt.db.UncommentPhoto(commentid, userid)
 	if err != nil {
+		ctx.Logger.WithError(err).Error("Can't remove the comment")
 		utils.ErrorTranslate(w, err)
 		return
 	}
