@@ -1,5 +1,7 @@
 package database
 
+import "wasaphoto.uniroma1.it/wasaphoto/service/utils"
+
 func (db *appdbimpl) ListLikes(photoid uint64, userid uint64) ([]Like, error) {
 	var stream_like []Like
 
@@ -22,7 +24,7 @@ func (db *appdbimpl) ListLikes(photoid uint64, userid uint64) ([]Like, error) {
 	}
 
 	if user_id_p == 0 {
-		return nil, ErrPhotoNotFound
+		return nil, utils.ErrPhotoNotFound
 	}
 
 	// Check if the guy who is asking for stream of like is the same who uploaded the photo
@@ -51,6 +53,6 @@ func (db *appdbimpl) ListLikes(photoid uint64, userid uint64) ([]Like, error) {
 		return stream_like, nil
 	} else {
 		defer func() { _ = rows.Close() }()
-		return stream_like, ErrPermissioneDenied
+		return stream_like, utils.ErrPermissioneDenied
 	}
 }

@@ -1,5 +1,7 @@
 package database
 
+import "wasaphoto.uniroma1.it/wasaphoto/service/utils"
+
 func (db *appdbimpl) UnfollowUser(logged_user uint64, user_id uint64) error {
 
 	// If exist array is not empty the guy is following so he can unfollow
@@ -22,6 +24,6 @@ func (db *appdbimpl) UnfollowUser(logged_user uint64, user_id uint64) error {
 		return nil
 
 	} else {
-		return ErrMustFollow
+		return utils.ErrMustFollow
 	}
 }

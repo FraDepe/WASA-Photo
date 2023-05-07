@@ -17,7 +17,8 @@ var ErrMustFollow = errors.New("you must follow before")
 var ErrPermissioneDenied = errors.New("permission denied")
 var ErrCommentNotFound = errors.New("comment not found")
 
-func errorTranslate(w http.ResponseWriter, err error) {
+func ErrorTranslate(w http.ResponseWriter, err error) {
+
 	switch err {
 	case ErrUserDoesNotExist:
 		w.WriteHeader(http.StatusNotFound)

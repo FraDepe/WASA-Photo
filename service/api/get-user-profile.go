@@ -7,6 +7,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"wasaphoto.uniroma1.it/wasaphoto/service/api/reqcontext"
+	"wasaphoto.uniroma1.it/wasaphoto/service/utils"
 )
 
 func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -29,7 +30,7 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Can't get the user")
-		w.WriteHeader(http.StatusNotFound)
+		utils.ErrorTranslate(w, err)
 		return
 	}
 

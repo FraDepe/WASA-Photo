@@ -7,6 +7,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"wasaphoto.uniroma1.it/wasaphoto/service/api/reqcontext"
+	"wasaphoto.uniroma1.it/wasaphoto/service/utils"
 )
 
 func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -39,8 +40,8 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, ps http
 	username := string(username_buf)
 
 	err = rt.db.SetMyUsername(username, userid)
-	if err != nil { // ???
-		w.WriteHeader(http.StatusInternalServerError)
+	if err != nil {
+		utils.ErrorTranslate(w, err)
 		return
 	}
 

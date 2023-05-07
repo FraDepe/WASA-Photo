@@ -1,12 +1,14 @@
 package database
 
+import "wasaphoto.uniroma1.it/wasaphoto/service/utils"
+
 func (db *appdbimpl) CommentPhoto(c Comment) (Comment, error) {
 
 	user_id := c.UserId
 	photo_id := c.PhotoId
 
 	if !db.existence(user_id) {
-		return c, ErrUserDoesNotExist
+		return c, utils.ErrUserDoesNotExist
 	}
 
 	// Get userid of the guy who uploaded the photo
@@ -28,7 +30,7 @@ func (db *appdbimpl) CommentPhoto(c Comment) (Comment, error) {
 	}
 
 	if user_id_p == 0 {
-		return c, ErrPhotoNotFound
+		return c, utils.ErrPhotoNotFound
 	}
 
 	// Check if the guy who is commenting is banned or no
@@ -54,7 +56,7 @@ func (db *appdbimpl) CommentPhoto(c Comment) (Comment, error) {
 		return c, nil
 	} else {
 		defer func() { _ = rows.Close() }()
-		return c, ErrBanned
+		return c, utils.ErrBanned
 	}
 
 }

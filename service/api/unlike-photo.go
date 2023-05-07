@@ -6,6 +6,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"wasaphoto.uniroma1.it/wasaphoto/service/api/reqcontext"
+	"wasaphoto.uniroma1.it/wasaphoto/service/utils"
 )
 
 func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -34,7 +35,7 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		err := rt.db.UnlikePhoto(userid, photoid)
 		if err != nil {
 			ctx.Logger.WithError(err).Error("Can't remove like")
-			w.WriteHeader(http.StatusInternalServerError)
+			utils.ErrorTranslate(w, err)
 			return
 		}
 	} else {

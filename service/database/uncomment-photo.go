@@ -1,5 +1,7 @@
 package database
 
+import "wasaphoto.uniroma1.it/wasaphoto/service/utils"
+
 func (db *appdbimpl) UncommentPhoto(id uint64, userid uint64) error {
 
 	// Query to get userid of user who commented
@@ -24,7 +26,7 @@ func (db *appdbimpl) UncommentPhoto(id uint64, userid uint64) error {
 
 	if comment_user_id == 0 {
 		defer func() { _ = rows.Close() }()
-		return ErrCommentNotFound
+		return utils.ErrCommentNotFound
 	}
 
 	// Query to get photoid who got commented
@@ -49,7 +51,7 @@ func (db *appdbimpl) UncommentPhoto(id uint64, userid uint64) error {
 
 	if photoid == 0 {
 		defer func() { _ = rows.Close() }()
-		return ErrPhotoNotFound
+		return utils.ErrPhotoNotFound
 	}
 
 	if comment_user_id == userid {
@@ -62,7 +64,7 @@ func (db *appdbimpl) UncommentPhoto(id uint64, userid uint64) error {
 		if err != nil {
 			return err
 		} else if affected == 0 {
-			return ErrPhotoNotFound
+			return utils.ErrPhotoNotFound
 		}
 
 		err = rows.Err()
@@ -81,7 +83,7 @@ func (db *appdbimpl) UncommentPhoto(id uint64, userid uint64) error {
 		return nil
 	} else {
 		defer func() { _ = rows.Close() }()
-		return ErrPermissioneDenied
+		return utils.ErrPermissioneDenied
 	}
 
 }

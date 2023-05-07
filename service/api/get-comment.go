@@ -7,6 +7,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"wasaphoto.uniroma1.it/wasaphoto/service/api/reqcontext"
+	"wasaphoto.uniroma1.it/wasaphoto/service/utils"
 )
 
 func (rt *_router) getComment(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -28,7 +29,7 @@ func (rt *_router) getComment(w http.ResponseWriter, r *http.Request, ps httprou
 	dbcomment, err := rt.db.GetComment(commentId, loggedUserId)
 
 	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
+		utils.ErrorTranslate(w, err)
 		return
 	}
 

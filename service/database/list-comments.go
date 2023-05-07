@@ -1,10 +1,12 @@
 package database
 
+import "wasaphoto.uniroma1.it/wasaphoto/service/utils"
+
 func (db *appdbimpl) ListComments(photoid uint64, userid uint64) ([]Comment, error) {
 	var stream_comments []Comment
 
 	if !db.existence(userid) {
-		return nil, ErrUserDoesNotExist
+		return nil, utils.ErrUserDoesNotExist
 	}
 
 	// Get userid of the guy who uploaded the photo
@@ -26,7 +28,7 @@ func (db *appdbimpl) ListComments(photoid uint64, userid uint64) ([]Comment, err
 	}
 
 	if user_id_p == 0 {
-		return nil, ErrPhotoNotFound
+		return nil, utils.ErrPhotoNotFound
 	}
 
 	// Check if who's asking is banned or no
@@ -55,7 +57,7 @@ func (db *appdbimpl) ListComments(photoid uint64, userid uint64) ([]Comment, err
 		return stream_comments, nil
 	} else {
 		defer func() { _ = rows.Close() }()
-		return stream_comments, ErrBanned
+		return stream_comments, utils.ErrBanned
 	}
 
 }

@@ -1,12 +1,14 @@
 package database
 
+import "wasaphoto.uniroma1.it/wasaphoto/service/utils"
+
 func (db *appdbimpl) GetUserProfile(userid uint64, loggedUser uint64) (User, error) {
 
 	var user User
 
 	// Check if the guy is banned or no
 	if db.isBanned(loggedUser, userid) {
-		return user, ErrBanned
+		return user, utils.ErrBanned
 
 	}
 
@@ -24,7 +26,7 @@ func (db *appdbimpl) GetUserProfile(userid uint64, loggedUser uint64) (User, err
 	}
 
 	if user.ID == 0 {
-		return user, ErrUserDoesNotExist
+		return user, utils.ErrUserDoesNotExist
 	}
 
 	err = rows.Err()

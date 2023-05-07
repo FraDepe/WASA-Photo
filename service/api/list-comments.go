@@ -7,6 +7,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"wasaphoto.uniroma1.it/wasaphoto/service/api/reqcontext"
+	"wasaphoto.uniroma1.it/wasaphoto/service/utils"
 )
 
 func (rt *_router) listComments(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -27,9 +28,8 @@ func (rt *_router) listComments(w http.ResponseWriter, r *http.Request, ps httpr
 	}
 
 	stream_comments, err := rt.db.ListComments(photoId, loggedUserId)
-
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		utils.ErrorTranslate(w, err)
 		return
 	}
 

@@ -6,6 +6,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"wasaphoto.uniroma1.it/wasaphoto/service/api/reqcontext"
+	"wasaphoto.uniroma1.it/wasaphoto/service/utils"
 )
 
 func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -39,7 +40,7 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 	err = rt.db.UnbanUser(loggedUser, userIdToUnban)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Can't unban the user")
-		w.WriteHeader(http.StatusInternalServerError)
+		utils.ErrorTranslate(w, err)
 		return
 	}
 

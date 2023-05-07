@@ -1,5 +1,7 @@
 package database
 
+import "wasaphoto.uniroma1.it/wasaphoto/service/utils"
+
 func (db *appdbimpl) DeletePhoto(id uint64, user_id uint64) error {
 
 	rows, err := db.c.Query(`SELECT userid FROM photos WHERE id=?`, id)
@@ -23,7 +25,7 @@ func (db *appdbimpl) DeletePhoto(id uint64, user_id uint64) error {
 
 	if actual_user_id == 0 {
 		defer func() { _ = rows.Close() }()
-		return ErrPhotoNotFound
+		return utils.ErrPhotoNotFound
 	}
 
 	if actual_user_id == user_id {
@@ -36,7 +38,7 @@ func (db *appdbimpl) DeletePhoto(id uint64, user_id uint64) error {
 		if err != nil {
 			return err
 		} else if affected == 0 {
-			return ErrPhotoNotFound
+			return utils.ErrPhotoNotFound
 		}
 
 		_, err = db.c.Exec(`DELETE FROM likes WHERE photoid=?`, id)
@@ -60,6 +62,6 @@ func (db *appdbimpl) DeletePhoto(id uint64, user_id uint64) error {
 		return nil
 	} else {
 		defer func() { _ = rows.Close() }()
-		return ErrPermissioneDenied
+		return utils.ErrPermissioneDenied
 	}
 }

@@ -1,12 +1,14 @@
 package database
 
+import "wasaphoto.uniroma1.it/wasaphoto/service/utils"
+
 func (db *appdbimpl) FollowUser(logged_user uint64, user_id uint64) (User, error) {
 
 	var user User
 
 	// Check if the users to follow exists
 	if !db.existence(user_id) {
-		return user, ErrUserDoesNotExist
+		return user, utils.ErrUserDoesNotExist
 	}
 
 	// Check if guy is banned before to follow
@@ -31,6 +33,6 @@ func (db *appdbimpl) FollowUser(logged_user uint64, user_id uint64) (User, error
 		return user, nil
 	} else {
 
-		return user, ErrBanned
+		return user, utils.ErrBanned
 	}
 }

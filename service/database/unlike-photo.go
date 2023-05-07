@@ -1,9 +1,11 @@
 package database
 
+import "wasaphoto.uniroma1.it/wasaphoto/service/utils"
+
 func (db *appdbimpl) UnlikePhoto(u_id uint64, p_id uint64) error {
 
 	if !db.existence(u_id) {
-		return ErrUserDoesNotExist
+		return utils.ErrUserDoesNotExist
 	}
 
 	res, err := db.c.Exec(`DELETE FROM likes WHERE photoid=? and userid=?`,
@@ -16,7 +18,7 @@ func (db *appdbimpl) UnlikePhoto(u_id uint64, p_id uint64) error {
 	if err != nil {
 		return err
 	} else if affected == 0 {
-		return ErrLikeNotFound
+		return utils.ErrLikeNotFound
 	}
 
 	// Update likes value of the photo

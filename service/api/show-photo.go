@@ -7,6 +7,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"wasaphoto.uniroma1.it/wasaphoto/service/api/reqcontext"
+	"wasaphoto.uniroma1.it/wasaphoto/service/utils"
 )
 
 func (rt *_router) showPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -29,7 +30,7 @@ func (rt *_router) showPhoto(w http.ResponseWriter, r *http.Request, ps httprout
 	dbphoto, err := rt.db.ShowPhoto(photoid, loggedUserId)
 
 	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
+		utils.ErrorTranslate(w, err)
 		return
 	}
 

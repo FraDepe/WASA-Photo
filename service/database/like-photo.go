@@ -1,9 +1,11 @@
 package database
 
+import "wasaphoto.uniroma1.it/wasaphoto/service/utils"
+
 func (db *appdbimpl) LikePhoto(l Like) (Like, error) {
 
 	if !db.existence(l.UserId) {
-		return l, ErrUserDoesNotExist
+		return l, utils.ErrUserDoesNotExist
 	}
 
 	// Get userid of the guy who uploaded the photo
@@ -26,7 +28,7 @@ func (db *appdbimpl) LikePhoto(l Like) (Like, error) {
 
 	if user_id_p == 0 {
 		defer func() { _ = rows.Close() }()
-		return l, ErrPhotoNotFound
+		return l, utils.ErrPhotoNotFound
 	}
 
 	// Check if the guy who is liking is banned or no

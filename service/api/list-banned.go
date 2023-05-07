@@ -7,6 +7,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"wasaphoto.uniroma1.it/wasaphoto/service/api/reqcontext"
+	"wasaphoto.uniroma1.it/wasaphoto/service/utils"
 )
 
 func (rt *_router) listBanned(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -30,7 +31,7 @@ func (rt *_router) listBanned(w http.ResponseWriter, r *http.Request, ps httprou
 		user_list, err := rt.db.ListBanned(loggedUserId)
 
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
+			utils.ErrorTranslate(w, err)
 			return
 		}
 

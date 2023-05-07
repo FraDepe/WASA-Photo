@@ -1,5 +1,7 @@
 package database
 
+import "wasaphoto.uniroma1.it/wasaphoto/service/utils"
+
 func (db *appdbimpl) ListFollowed(userId uint64, loggedUser uint64) ([]User, error) {
 	var user_list []User
 
@@ -32,6 +34,6 @@ func (db *appdbimpl) ListFollowed(userId uint64, loggedUser uint64) ([]User, err
 		return user_list, nil
 	} else {
 
-		return user_list, ErrMustFollow
+		return user_list, utils.ErrMustFollow
 	}
 }

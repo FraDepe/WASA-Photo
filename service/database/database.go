@@ -36,6 +36,7 @@ import (
 	"fmt"
 )
 
+/*
 var ErrUserDoesNotExist = errors.New("user doesn't exist")
 var ErrInternalServer = errors.New("internal server error")
 var ErrPhotoNotFound = errors.New("photo not found")
@@ -46,7 +47,7 @@ var ErrBanned = errors.New("you can't do it")
 var ErrMustFollow = errors.New("you must follow before")
 var ErrPermissioneDenied = errors.New("permission denied")
 var ErrCommentNotFound = errors.New("comment not found")
-
+*/
 // Fountain struct represent a fountain in every API call between this package and the outside world.
 // Note that the internal representation of fountain in the database might be different.
 // type Fountain struct {

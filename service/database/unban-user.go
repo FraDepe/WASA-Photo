@@ -1,10 +1,12 @@
 package database
 
+import "wasaphoto.uniroma1.it/wasaphoto/service/utils"
+
 func (db *appdbimpl) UnbanUser(logged_user uint64, user_id uint64) error {
 
 	// Check if the guy exists
 	if !db.existence(user_id) {
-		return ErrUserDoesNotExist
+		return utils.ErrUserDoesNotExist
 	}
 
 	// Check if the guy is banned or no
@@ -25,7 +27,7 @@ func (db *appdbimpl) UnbanUser(logged_user uint64, user_id uint64) error {
 
 	} else {
 
-		return ErrUserNotFound
+		return utils.ErrUserNotFound
 	}
 
 }

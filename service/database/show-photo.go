@@ -1,5 +1,7 @@
 package database
 
+import "wasaphoto.uniroma1.it/wasaphoto/service/utils"
+
 func (db *appdbimpl) ShowPhoto(photoid uint64, userid uint64) (Photo, error) {
 	var photo Photo
 
@@ -42,14 +44,14 @@ func (db *appdbimpl) ShowPhoto(photoid uint64, userid uint64) (Photo, error) {
 		}
 
 		if photo.Picture == nil {
-			return photo, ErrPhotoNotFound
+			return photo, utils.ErrPhotoNotFound
 		}
 
 		defer func() { _ = rows.Close() }()
 		return photo, nil
 	} else {
 		defer func() { _ = rows.Close() }()
-		return photo, ErrBanned
+		return photo, utils.ErrBanned
 	}
 
 }
