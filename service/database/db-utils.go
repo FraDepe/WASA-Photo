@@ -47,6 +47,8 @@ func (db *appdbimpl) isBanned(userId uint64, loggedId uint64) bool {
 		return false
 	}
 
+	defer func() { _ = rows.Close() }()
+
 	if len(exist) == 0 {
 		return false
 	} else {
@@ -74,6 +76,8 @@ func (db *appdbimpl) isFollowing(userId uint64, loggedId uint64) bool {
 	if err != nil {
 		return false
 	}
+
+	defer func() { _ = rows.Close() }()
 
 	if len(exist) == 0 {
 		return false

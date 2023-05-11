@@ -51,5 +51,5 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	comment.FromDatabase(dbcomment)
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(comment)
-	return
+
 }

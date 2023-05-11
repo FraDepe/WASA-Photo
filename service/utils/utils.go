@@ -20,37 +20,37 @@ var ErrCommentNotFound = errors.New("comment not found")
 
 func ErrorTranslate(w http.ResponseWriter, err error) {
 
-	switch err {
-	case ErrUserDoesNotExist:
+	if errors.Is(err, ErrUserDoesNotExist) {
 		w.WriteHeader(http.StatusNotFound)
-	case ErrInternalServer:
+	} else if errors.Is(err, ErrInternalServer) {
 		w.WriteHeader(http.StatusInternalServerError)
-	case ErrPhotoNotFound:
+	} else if errors.Is(err, ErrPhotoNotFound) {
 		w.WriteHeader(http.StatusNotFound)
-	case ErrLikeNotFound:
+	} else if errors.Is(err, ErrLikeNotFound) {
 		w.WriteHeader(http.StatusNotFound)
-	case ErrUserAlreadyBanned:
+	} else if errors.Is(err, ErrUserAlreadyBanned) {
 		w.WriteHeader(http.StatusForbidden)
-	case ErrUserNotFound:
+	} else if errors.Is(err, ErrUserNotFound) {
 		w.WriteHeader(http.StatusNotFound)
-	case ErrBanned:
+	} else if errors.Is(err, ErrBanned) {
 		w.WriteHeader(http.StatusForbidden)
-	case ErrMustFollow:
+	} else if errors.Is(err, ErrMustFollow) {
 		w.WriteHeader(http.StatusForbidden)
-	case ErrPermissioneDenied:
+	} else if errors.Is(err, ErrPermissioneDenied) {
 		w.WriteHeader(http.StatusForbidden)
-	case ErrCommentNotFound:
+	} else if errors.Is(err, ErrCommentNotFound) {
 		w.WriteHeader(http.StatusNotFound)
-	default:
+	} else {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
+	return
 }
 
 func ValidUsername(username string) bool {
 	isValid := regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString(username)
 	if isValid && len(username) >= 3 {
 		return true
-	} else {
-		return false
 	}
+	return false
+
 }
