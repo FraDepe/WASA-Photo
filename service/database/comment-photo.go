@@ -18,10 +18,10 @@ func (db *appdbimpl) CommentPhoto(c Comment) (Comment, error) {
 	}
 	var user_id_p uint64
 	for rows.Next() {
+		err = rows.Scan(&user_id_p)
 		if err != nil {
 			return c, err
 		}
-		err = rows.Scan(&user_id_p)
 	}
 
 	err = rows.Err()

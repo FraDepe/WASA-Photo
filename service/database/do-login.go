@@ -13,10 +13,10 @@ func (db *appdbimpl) DoLogin(u string) (User, error) {
 	for rows.Next() {
 		var tmp uint64
 		err = rows.Scan(&tmp)
-		avaible = append(avaible, tmp)
 		if err != nil {
 			return user, err
 		}
+		avaible = append(avaible, tmp)
 	}
 
 	err = rows.Err()

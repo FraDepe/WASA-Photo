@@ -14,7 +14,6 @@ import (
 
 func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	var photo Photo
-	var err error
 
 	logged_user_id := r.Header.Get("Authorization")
 	loggedUserId, err := strconv.ParseUint(logged_user_id, 10, 64)
@@ -61,5 +60,8 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 
 	photo.FromDatabase(dbphoto)
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(photo)
+	err = json.NewEncoder(w).Encode(photo)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 }

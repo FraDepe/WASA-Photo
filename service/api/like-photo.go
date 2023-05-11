@@ -50,6 +50,9 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 
 	like.FromDatabase(dblike)
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(like)
+	err = json.NewEncoder(w).Encode(like)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 
 }
