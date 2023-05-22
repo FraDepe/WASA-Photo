@@ -54,7 +54,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Identifier"
   
-  /users/{userId}/:
+  /users/{userid}/profile/{username}:
   
     get:
       tags:  
@@ -65,12 +65,18 @@ paths:
         - bearerAuth: []
       operationId: getUserProfile
       parameters:
-        - name: userId
-          in: path
-          description: Id of user
-          required: true
-          schema:
-            $ref: '#/components/schemas/Identifier'
+      - name: userid
+        in: path
+        description: Identifier of user
+        required: true
+        schema:
+          $ref: "#/components/schemas/Identifier"
+      - name: username
+        in: path
+        description: Name of user
+        required: true
+        schema:
+          $ref: "#/components/schemas/Username"
       responses:
         '200':
           description: Stream page returned successfully
@@ -881,6 +887,7 @@ components:
     Photo:   
       required:
         - photo_id
+        - user_id
         - photo_file
         - likes
         - date_time
@@ -889,6 +896,8 @@ components:
       description: Photo of platform
       properties:
         photo_id:
+          $ref: '#/components/schemas/Identifier'
+        user_id:
           $ref: '#/components/schemas/Identifier'
         photo_file:
           description: File of the photo

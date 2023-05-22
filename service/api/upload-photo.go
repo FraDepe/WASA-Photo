@@ -49,7 +49,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 
 	photo.Comments = 0
 	photo.Likes = 0
-	photo.Date_time = time.Now().Format("2017-07-21T17:32:28Z")
+	photo.Date_time = time.Now().Format("Mon Jan 2 15:04:05 MST 2006")
 
 	dbphoto, err := rt.db.UploadPhoto(photo.ToDatabase(), userId)
 	if err != nil {

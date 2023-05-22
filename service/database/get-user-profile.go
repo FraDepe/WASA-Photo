@@ -2,18 +2,12 @@ package database
 
 import "wasaphoto.uniroma1.it/wasaphoto/service/utils"
 
-func (db *appdbimpl) GetUserProfile(userid uint64, loggedUser uint64) (User, error) {
+func (db *appdbimpl) GetUserProfile(username string, loggedUser uint64) (User, error) {
 
 	var user User
 
-	// Check if the guy is banned or no
-	if db.isBanned(userid, loggedUser) {
-		return user, utils.ErrBanned
-
-	}
-
 	// Fetch infos of the profile
-	rows, err := db.c.Query(`SELECT id, username, follower, following, banned, photos FROM users WHERE id=?`, userid)
+	rows, err := db.c.Query(`SELECT id, username, follower, following, banned, photos FROM users WHERE username=?`, username)
 	if err != nil {
 		return user, err
 	}
@@ -34,8 +28,10 @@ func (db *appdbimpl) GetUserProfile(userid uint64, loggedUser uint64) (User, err
 		return user, err
 	}
 
-	if user.ID != userid {
-		return user, nil
+	// Check if the guy is banned or no
+	if db.isBanned(user.ID, loggedUser) {
+		return user, utils.ErrBanned
+
 	}
 
 	defer func() { _ = rows.Close() }()

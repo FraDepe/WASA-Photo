@@ -10,23 +10,28 @@ import (
 	"wasaphoto.uniroma1.it/wasaphoto/service/utils"
 )
 
+type Element struct {
+	User   User
+	Photos []Photo
+}
+
 func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
+	username := ps.ByName("username")
+
+	if !utils.ValidUsername(username) {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	user_id := ps.ByName("userid")
-	userId, err := strconv.ParseUint(user_id, 10, 64)
+	loggedUser, err := strconv.ParseUint(user_id, 10, 64)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	logged_user := r.Header.Get("Authorization")
-	loggedUser, err := strconv.ParseUint(logged_user, 10, 64)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	dbuser, err := rt.db.GetUserProfile(userId, loggedUser)
+	dbuser, err := rt.db.GetUserProfile(username, loggedUser)
 
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Can't get the profile")

@@ -96,7 +96,7 @@ type AppDatabase interface {
 	UploadPhoto(Photo, uint64) (Photo, error)
 	ShowPhoto(uint64, uint64) (Photo, error)
 	DeletePhoto(uint64, uint64) error
-	GetUserProfile(uint64, uint64) (User, error)
+	GetUserProfile(string, uint64) (User, error)
 	ListComments(uint64, uint64) ([]Comment, error)
 	CommentPhoto(Comment) (Comment, error)
 	GetComment(uint64, uint64) (Comment, error)
