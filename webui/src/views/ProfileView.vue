@@ -17,6 +17,14 @@ export default {
 				photos: 0
 			},
 			banned: false,
+			ban: {
+				id: 0,
+				username: 0,
+				follower: 0,
+				following: 0,
+				banned: 0,
+				photos: 0
+			},
 			user: {
 				id: 0,
 				username: 0,
@@ -73,6 +81,20 @@ export default {
 			else {
 				this.followed = false
 			}
+
+			try {
+				let response = await this.$axios.get("/users/"+ localStorage.userid +"/banned/" + this.user.id);
+				this.ban = response.data;
+			} catch (e) {
+				this.errormsg = e.toString();
+			}
+			console.log(this.ban.id)
+			if (this.ban.id == this.user.id) {
+				this.banned = true
+			}
+			else {
+				this.banned = false
+			}
 			
 			this.loading = false;
 			this.loggedId = localStorage.userid
@@ -125,7 +147,6 @@ export default {
 						Authorization: localStorage.userid
 					}
 				});
-				this.banned = true
 				await this.refresh();
 			} catch (e) {
 				this.errormsg = e.toString();
@@ -143,7 +164,6 @@ export default {
 						Authorization: localStorage.userid
 					}
 				});
-				this.banned = false
 				await this.refresh();
 			} catch (e) {
 				this.errormsg = e.toString();
@@ -232,7 +252,7 @@ export default {
 								Unfollow
 							</button>
 						</div>
-						<div class="btn-group me-2" v-if="banned == false"> 
+						<div class="btn-group me-2" v-if="this.banned == false"> 
 							<button type="button" class="btn btn-sm btn-outline-danger" @click="banUser">
 								Ban
 							</button>

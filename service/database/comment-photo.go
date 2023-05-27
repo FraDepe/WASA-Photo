@@ -43,6 +43,9 @@ func (db *appdbimpl) CommentPhoto(c Comment) (Comment, error) {
 		}
 
 		comment_id, err := res.LastInsertId()
+		if err != nil {
+			return c, err
+		}
 
 		// Update comment value of the photo
 		_, err = db.c.Exec(`UPDATE photos SET comments=comments+1 WHERE id=?`, photo_id)

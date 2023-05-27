@@ -110,6 +110,7 @@ type AppDatabase interface {
 	FollowUser(uint64, uint64) (User, error)
 	UnfollowUser(uint64, uint64) error
 	ListBanned(uint64) ([]User, error)
+	GetBanned(uint64, uint64) (User, error)
 	BanUser(uint64, uint64) (User, error)
 	UnbanUser(uint64, uint64) error
 

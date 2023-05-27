@@ -855,17 +855,51 @@ paths:
     parameters:
       - name: userId
         in: path
-        description: Identifier of user who's following
+        description: Identifier of user who's banning
         required: true
         schema:
           $ref: '#/components/schemas/Identifier'
       - name: userIdToBan
         in: path
-        description: Identifier of user to follow
+        description: Identifier of user to ban
         required: true
         schema:
           $ref: '#/components/schemas/Identifier'
   
+    get:
+      tags:
+        - Ban
+      summary: Get specific banned
+      description: Return a specific banned user of a specific user
+      security:
+        - bearerAuth: []
+      operationId: getBanned
+      responses:
+        '200':
+          description: User returned succesfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Like'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: The server encountered an internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
     put:
       tags:
         - Ban
