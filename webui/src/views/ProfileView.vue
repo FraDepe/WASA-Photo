@@ -16,7 +16,8 @@ export default {
 				following: 0,
 				banned: 0,
 				photos: 0
-			}
+			},
+			loggedId: 0
             
 		}
 	},
@@ -35,6 +36,18 @@ export default {
 				this.errormsg = e.toString();
 			}
 			this.loading = false;
+			try {
+				let response = await this.$axios.get("/users/"+ localStorage.userid +"/profile/" + localStorage.usernameToSearch + "/", {
+					headers: {
+						Authorization: localStorage.userid
+					}
+				});
+				this.photos = response.data;
+			} catch (e) {
+				this.errormsg = e.toString();
+			}
+			this.loading = false;
+			this.loggedId = localStorage.userid
 		},
 		async followUser() {
 			this.loading = true;
@@ -154,6 +167,21 @@ export default {
 			this.usernameToSearch = ""
 			this.refresh()
 		},
+		async showPhoto(photoid){
+			this.$router.push("/photo/"+ photoid);
+			this.refresh()
+		},
+		async changeUsername(string) {
+			await this.$axios.put("/users/" + localStorage.userid + "/changeUsername",this.newUsername , {
+					headers: {
+						Authorization: localStorage.userid
+					}
+				});
+			localStorage.usernameToSearch = this.newUsername
+			this.$router.replace("/user/"+ this.newUsername);
+			this.newUsername = ""
+			this.refresh()
+		},
 	},
 	mounted() {
 		this.refresh()
@@ -165,38 +193,47 @@ export default {
 	<div>
 		<div
 			class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-			<h1 class="h2">Profile of {{this.user.username}}</h1>
+			<h1 class="h2" v-if="this.user.id != this.loggedId">Profile of {{this.user.username}}</h1>
+			<h1 class="h2" v-else>Your stream</h1>
 			<h6 class="label"> Follower: {{this.user.follower}}</h6>
 			<h6 class="label"> Following: {{this.user.following}}</h6>
 			<div class="btn-toolbar mb-2 mb-md-0">
+				<div class="input-group me-2" v-if="this.user.id == this.loggedId">
+					<input type="string" class="form-control" v-model="newUsername" placeholder="New username">
+					<button type="button" class="btn btn-primary" @click="changeUsername(this.newUsername)" >
+						Change
+					</button>
+				</div>
 				<div class="input-group me-2">
 					<input type="string" class="form-control" v-model="usernameToSearch" placeholder="Search here for a user">
 					<button type="button" class="btn btn-primary" @click="getUserProfile(this.usernameToSearch)" >
 						Search
 					</button>
 				</div>
-					<div class="btn-group me-2" > // va aggiunto v-if
-						<button type="button" class="btn btn-sm btn-success" @click="followUser">
-							Follow
-						</button>
+					<div v-if="this.user.id != this.loggedId">
+						<div class="btn-group me-2" > // va aggiunto v-if
+							<button type="button" class="btn btn-sm btn-success" @click="followUser">
+								Follow
+							</button>
+						</div>
+						<div class="btn-group me-2" >
+							<button type="button" class="btn btn-sm btn-danger" @click="unfollowUser">
+								Unfollow
+							</button>
+						</div>
+						<div class="btn-group me-2"> // va aggiunto v-if
+							<button type="button" class="btn btn-sm btn-outline-danger" @click="banUser">
+								Ban
+							</button>
+						</div>
+						<div class="btn-group me-2">
+							<button type="button" class="btn btn-sm btn-outline-danger" @click="unbanUser">
+								Unban
+							</button>
+						</div>
 					</div>
-					<div class="btn-group me-2" >
-						<button type="button" class="btn btn-sm btn-danger" @click="unfollowUser">
-							Unfollow
-						</button>
-					</div>
-					<div class="btn-group me-2"> // va aggiunto v-if
-						<button type="button" class="btn btn-sm btn-outline-danger" @click="banUser">
-							Ban
-						</button>
-					</div>
-					<div class="btn-group me-2">
-						<button type="button" class="btn btn-sm btn-outline-danger" @click="unbanUser">
-							Unban
-						</button>
-					</div>
+				</div>
 			</div>
-		</div>
 
 		<ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
 
@@ -204,7 +241,7 @@ export default {
 
 		<div class="card" v-if="photos.length === 0">
 			<div class="card-body">
-				<p>{{this.user.username}} hasn't uplaod any photos yet</p>
+				<p>{{this.user.username}} hasn't upload any photos yet</p>
 			</div>
 		</div>
 		<div class="card" v-else>
@@ -216,12 +253,17 @@ export default {
 					<div class="row" >
 						<div class="col-md-6" v-if="!loading" v-for="p in photos">
 							<p class="card-text">
-								<img :src="'data:image;base64,' + p.Picture" style="height: 250px;"/><br />
+								<div @click="showPhoto(p.ID)">
+									<img :src="'data:image;base64,' + p.Picture" style="height: 250px;"/><br />
+								</div>
 								User: {{ p.User_id }}<br />
 								Date: {{ p.Date_time }}<br />
 								Likes: {{ p.Likes }}<br />
 								Comments: {{ p.Comments }}<br />
-							<button type="button" class="btn btn-primary" @click="likePhoto(p.ID)">Like</button>
+								<div v-if="this.user.id != this.loggedId">
+									<button type="button" class="btn btn-primary" @click="likePhoto(p.ID)">Like</button>
+									<button type="button" class="btn btn-danger" @click="unlikePhoto(p.ID)">Unlike</button>
+								</div>
 							</p>
 							<div class="input-group mb-3">
 								<input type="string" class="form-control" v-model="comment" placeholder="Write your comment here">
