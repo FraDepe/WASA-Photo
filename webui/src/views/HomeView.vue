@@ -5,13 +5,10 @@ export default {
 			errormsg: null,
 			loading: false,
 			photos: [],
-			like: {
-				photoid: 0,
-				userid: 0
-			},
 			comment: "",
 			username: "",
-			loggedId: 0
+			loggedId: 0,
+			boolean: true,
 		}
 	},
 	methods: {
@@ -52,38 +49,6 @@ export default {
 			}
 			this.loading = false;
 		},
-		async likePhoto(photoid) {
-			this.loading = true;
-			this.errormsg = null;
-			try {
-				await this.$axios.post("/photos/" + photoid + "/likes/" + localStorage.userid , null, {
-					headers: {
-						Authorization: localStorage.userid
-					}
-				});
-
-				await this.refresh();
-			} catch (e) {
-				this.errormsg = e.toString();
-			}
-			this.loading = false;
-		},
-		async unlikePhoto(photoid) {
-			this.loading = true;
-			this.errormsg = null;
-			try {
-				await this.$axios.delete("/photos/" + photoid + "/likes/" + localStorage.userid , {
-					headers: {
-						Authorization: localStorage.userid
-					}
-				});
-
-				await this.refresh();
-			} catch (e) {
-				this.errormsg = e.toString();
-			}
-			this.loading = false;
-		},
 		async commentPhoto(photoid) {
 			this.loading = true;
 			this.errormsg = null;
@@ -108,24 +73,6 @@ export default {
 			this.$router.push("/photo/"+ photoid);
 			this.refresh()
 		},
-		async liked(photoid, userid) {
-			this.errormsg = null;
-			try {
-				let response = await this.$axios.get("/photos/" + photoid + "/likes/" + userid, {
-					headers: {
-						Authorization: this.userid
-					}
-				});
-				this.like = response.data
-				console.log(this.like.userid)
-			} catch (e) {
-				this.errormsg = e.toString();
-			}
-			if (this.like.userid != 0) {
-				return true
-			}
-			return false;
-		}
 	},
 	mounted() {
 		this.refresh()
@@ -189,8 +136,6 @@ export default {
 								Date: {{ p.Date_time }}<br />
 								Likes: {{ p.Likes }}<br />
 								Comments: {{ p.Comments }}<br />
-							<button type="button" class="btn btn-primary" @click="likePhoto(p.ID)" v-if="this.liked(p.ID, this.loggedId) == false">Like</button>
-							<button type="button" class="btn btn-danger" @click="unlikePhoto(p.ID)" v-else>Unlike</button>
 							</p>
 							<div class="input-group mb-3">
 								<input type="string" class="form-control" v-model="comment" placeholder="Write your comment here">

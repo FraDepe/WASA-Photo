@@ -718,6 +718,40 @@ paths:
         required: true
         schema:
           $ref: '#/components/schemas/Identifier'
+
+    get:
+      tags:
+        - Following
+      summary: Get specific follower
+      description: Return a specific follower of a specific user
+      security:
+        - bearerAuth: []
+      operationId: getFollowed
+      responses:
+        '200':
+          description: User returned succesfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Like'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: The server encountered an internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
   
     put:
       tags:

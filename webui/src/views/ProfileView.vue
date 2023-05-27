@@ -5,10 +5,18 @@ export default {
 			errormsg: null,
 			loading: false,
 			photos: [],
-			likes: [],
 			comment: "",
 			usernameToSearch: "",
-			following: false,
+			followed: false,
+			follower: {
+				id: 0,
+				username: 0,
+				follower: 0,
+				following: 0,
+				banned: 0,
+				photos: 0
+			},
+			banned: false,
 			user: {
 				id: 0,
 				username: 0,
@@ -22,9 +30,11 @@ export default {
 		}
 	},
 	methods: {
+
 		async refresh() {
 			this.loading = true;
 			this.errormsg = null;
+
 			try {
 				let response = await this.$axios.get("/users/"+ localStorage.userid +"/profile/" + localStorage.usernameToSearch, {
 					headers: {
@@ -35,6 +45,7 @@ export default {
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
+
 			try {
 				let response = await this.$axios.get("/users/"+ localStorage.userid +"/profile/" + localStorage.usernameToSearch + "/", {
 					headers: {
@@ -45,12 +56,32 @@ export default {
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
+
+			try {
+				let response = await this.$axios.get("/users/"+ localStorage.userid +"/following/" + this.user.id, {
+					headers: {
+						Authorization: localStorage.userid
+					}
+				});
+				this.follower = response.data;
+			} catch (e) {
+				this.errormsg = e.toString();
+			}
+			if (this.follower.id == this.user.id) {
+				this.followed = true
+			}
+			else {
+				this.followed = false
+			}
+			
 			this.loading = false;
 			this.loggedId = localStorage.userid
 		},
+
 		async followUser() {
 			this.loading = true;
 			this.errormsg = null;
+
 			try {
 				await this.$axios.put("/users/" + localStorage.userid + "/following/" + this.user.id, {}, {
 					headers: {
@@ -62,11 +93,14 @@ export default {
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
+
 			this.loading = false;
 		},
+
 		async unfollowUser() {
 			this.loading = true;
 			this.errormsg = null;
+
 			try {
 				await this.$axios.delete("/users/" + localStorage.userid + "/following/" + this.user.id, {
 					headers: {
@@ -80,9 +114,11 @@ export default {
 			}
 			this.loading = false;
 		},
+
 		async banUser() {
 			this.loading = true;
 			this.errormsg = null;
+
 			try {
 				await this.$axios.put("/users/" + localStorage.userid + "/banned/" + this.user.id, {}, {
 					headers: {
@@ -96,9 +132,11 @@ export default {
 			}
 			this.loading = false;
 		},
+
 		async unbanUser() {
 			this.loading = true;
 			this.errormsg = null;
+
 			try {
 				await this.$axios.delete("/users/" + localStorage.userid + "/banned/" + this.user.id, {
 					headers: {
@@ -112,41 +150,11 @@ export default {
 			}
 			this.loading = false;
 		},
-		async likePhoto(photoid) {
-			this.loading = true;
-			this.errormsg = null;
-			try {
-				await this.$axios.post("/photos/" + photoid + "/likes/" + localStorage.userid , null, {
-					headers: {
-						Authorization: localStorage.userid
-					}
-				});
 
-				await this.refresh();
-			} catch (e) {
-				this.errormsg = e.toString();
-			}
-			this.loading = false;
-		},
-		async unlikePhoto(photoid) {
-			this.loading = true;
-			this.errormsg = null;
-			try {
-				await this.$axios.delete("/photos/" + photoid + "/likes/" + localStorage.userid ,null , {
-					headers: {
-						Authorization: localStorage.userid
-					}
-				});
-
-				await this.refresh();
-			} catch (e) {
-				this.errormsg = e.toString();
-			}
-			this.loading = false;
-		},
 		async commentPhoto(photoid) {
 			this.loading = true;
 			this.errormsg = null;
+
 			try {
 				await this.$axios.post("/photos/" + photoid + "/comments/", this.comment , {
 					headers: {
@@ -160,16 +168,19 @@ export default {
 			}
 			this.loading = false;
 		},
+
 		async getUserProfile(string) {
 			localStorage.usernameToSearch = string
 			this.$router.push("/user/"+ string);
 			this.usernameToSearch = ""
 			this.refresh()
 		},
+
 		async showPhoto(photoid){
 			this.$router.push("/photo/"+ photoid);
 			this.refresh()
 		},
+
 		async changeUsername(string) {
 			await this.$axios.put("/users/" + localStorage.userid + "/changeUsername",this.newUsername , {
 					headers: {
@@ -182,6 +193,7 @@ export default {
 			this.refresh()
 		},
 	},
+
 	mounted() {
 		this.refresh()
 	}
@@ -210,22 +222,22 @@ export default {
 					</button>
 				</div>
 					<div v-if="this.user.id != this.loggedId">
-						<div class="btn-group me-2" > // va aggiunto v-if
+						<div class="btn-group me-2" v-if="this.followed == false"> 
 							<button type="button" class="btn btn-sm btn-success" @click="followUser">
 								Follow
 							</button>
 						</div>
-						<div class="btn-group me-2" >
+						<div class="btn-group me-2" v-else>
 							<button type="button" class="btn btn-sm btn-danger" @click="unfollowUser">
 								Unfollow
 							</button>
 						</div>
-						<div class="btn-group me-2"> // va aggiunto v-if
+						<div class="btn-group me-2" v-if="banned == false"> 
 							<button type="button" class="btn btn-sm btn-outline-danger" @click="banUser">
 								Ban
 							</button>
 						</div>
-						<div class="btn-group me-2">
+						<div class="btn-group me-2" v-else>
 							<button type="button" class="btn btn-sm btn-outline-danger" @click="unbanUser">
 								Unban
 							</button>
@@ -259,10 +271,6 @@ export default {
 								Date: {{ p.Date_time }}<br />
 								Likes: {{ p.Likes }}<br />
 								Comments: {{ p.Comments }}<br />
-								<div v-if="this.user.id != this.loggedId">
-									<button type="button" class="btn btn-primary" @click="likePhoto(p.ID)">Like</button>
-									<button type="button" class="btn btn-danger" @click="unlikePhoto(p.ID)">Unlike</button>
-								</div>
 							</p>
 							<div class="input-group mb-3">
 								<input type="string" class="form-control" v-model="comment" placeholder="Write your comment here">

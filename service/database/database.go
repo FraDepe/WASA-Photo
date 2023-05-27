@@ -90,7 +90,6 @@ type Like struct {
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
 	DoLogin(string) (User, error)
-	// GetFollowingStream(User, uint64) ([]Photo, error)
 	GetMyStream(uint64) ([]Photo, error)
 	SetMyUsername(string, uint64) error
 	UploadPhoto(Photo, uint64) (Photo, error)
@@ -101,17 +100,17 @@ type AppDatabase interface {
 	ListComments(uint64, uint64) ([]Comment, error)
 	CommentPhoto(Comment) (Comment, error)
 	GetComment(uint64, uint64) (Comment, error)
-	// ModifyComment(string, string) error
 	UncommentPhoto(uint64, uint64) error
 	ListLikes(uint64, uint64) ([]Like, error)
 	GetLike(uint64, uint64) (Like, error)
 	LikePhoto(Like) (Like, error)
 	UnlikePhoto(uint64, uint64) error
 	ListFollowed(uint64, uint64) ([]User, error)
-	FollowUser(uint64, uint64) (User, error) // Perchè torno un user?
+	GetFollowed(uint64, uint64) (User, error)
+	FollowUser(uint64, uint64) (User, error)
 	UnfollowUser(uint64, uint64) error
 	ListBanned(uint64) ([]User, error)
-	BanUser(uint64, uint64) (User, error) // Perchè torno un user?
+	BanUser(uint64, uint64) (User, error)
 	UnbanUser(uint64, uint64) error
 
 	// Ping checks whether the database is available or not (in that case, an error will be returned)

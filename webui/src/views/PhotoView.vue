@@ -5,7 +5,11 @@ export default {
 			errormsg: null,
 			loading: false,
 			photos: [],
-			likes: [],
+			like: {
+				photoid: 0,
+				userid: 0
+			},
+			liked: null,
 			comment: "",
 			usernameToSearch: "",
 			following: false,
@@ -23,9 +27,11 @@ export default {
 		}
 	},
 	methods: {
+
 		async refresh() {
 			this.loading = true;
 			this.errormsg = null;
+
 			try {
 				let response = await this.$axios.get("/photos/"+ this.$route.params.photoid, {
 					headers: {
@@ -36,6 +42,7 @@ export default {
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
+
 			try {
 				let response = await this.$axios.get("/photos/" + this.$route.params.photoid + "/comments/", {
 					headers: {
@@ -46,9 +53,28 @@ export default {
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
+
+			try {
+				let response = await this.$axios.get("/photos/" + this.$route.params.photoid + "/likes/" + localStorage.userid, {
+					headers: {
+						Authorization: this.userid
+					}
+				});
+				this.like = response.data
+				console.log(this.like.userid)
+			} catch (e) {
+				this.errormsg = e.toString();
+			}
+
+			if (this.like.userid == 0) {
+				this.liked = false
+			} else {
+				this.liked = true
+			}
             this.loggedId = localStorage.userid
 			this.loading = false;
 		},
+
 		async likePhoto(photoid) {
 			this.loading = true;
 			this.errormsg = null;
@@ -65,6 +91,7 @@ export default {
 			}
 			this.loading = false;
 		},
+
 		async unlikePhoto(photoid) {
 			this.loading = true;
 			this.errormsg = null;
@@ -81,6 +108,7 @@ export default {
 			}
 			this.loading = false;
 		},
+
 		async commentPhoto(photoid) {
 			this.loading = true;
 			this.errormsg = null;
@@ -98,12 +126,31 @@ export default {
 			this.refresh()
 			this.loading = false;
 		},
+
+		async deleteComment(photoid, commentid) {
+			this.loading = true;
+			this.errormsg = null;
+			try {
+				await this.$axios.delete("/photos/" + photoid + "/comments/" + commentid, {
+					headers: {
+						Authorization: localStorage.userid
+					}
+				});
+				await this.refresh();
+			} catch (e) {
+				this.errormsg = e.toString();
+			}
+			this.refresh()
+			this.loading = false;
+		},
+
 		async getUserProfile(string) {
 			localStorage.usernameToSearch = string
 			this.$router.push("/user/"+ string);
 			this.usernameToSearch = ""
 			this.refresh()
 		},
+
 	},
 	mounted() {
 		this.refresh()
@@ -137,8 +184,8 @@ export default {
                     <img :src="'data:image;base64,' + this.photo.picture" style="height: 250px;"/><br />
                     Likes: {{ this.photo.likes }} <br />
                     <div v-if="this.loggedId != this.photo.user_id">
-                        <button type="button" class="btn btn-primary" @click="likePhoto(this.photo.id)">Like</button>
-                        <button type="button" class="btn btn-danger" @click="unlikePhoto(this.photo.id)">Unlike</button>
+                        <button type="button" class="btn btn-primary" @click="likePhoto(this.photo.id)" v-if="liked == false">Like</button>
+                        <button type="button" class="btn btn-danger" @click="unlikePhoto(this.photo.id)" v-else>Unlike</button>
                     </div>
                 </p>
                 <div class="input-group mb-3">
@@ -150,7 +197,7 @@ export default {
 						<p class="card-text" v-for="c in comments">
 							{{ c.UserId }} <br />
 							{{ c.Text }} 
-							<button type="button" class="btn btn-danger" @click="deleteComments(c.ID)" v-if="c.UserId == this.loggedId">Delete</button>
+							<button type="button" class="btn btn-danger" @click="deleteComment(this.photo.id ,c.ID)" v-if="c.UserId == this.loggedId">Delete</button>
 							<br />
 							<hr>
 						</p>
