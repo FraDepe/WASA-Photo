@@ -104,6 +104,7 @@ type AppDatabase interface {
 	// ModifyComment(string, string) error
 	UncommentPhoto(uint64, uint64) error
 	ListLikes(uint64, uint64) ([]Like, error)
+	GetLike(uint64, uint64) (Like, error)
 	LikePhoto(Like) (Like, error)
 	UnlikePhoto(uint64, uint64) error
 	ListFollowed(uint64, uint64) ([]User, error)

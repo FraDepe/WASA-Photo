@@ -35,7 +35,6 @@ export default {
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
-			this.loading = false;
 			try {
 				let response = await this.$axios.get("/users/"+ localStorage.userid +"/profile/" + localStorage.usernameToSearch + "/", {
 					headers: {

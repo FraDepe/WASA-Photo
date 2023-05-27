@@ -79,6 +79,49 @@ paths:
           $ref: "#/components/schemas/Username"
       responses:
         '200':
+          description: User profile returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: The server encountered an internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+            
+  /users/{userid}/profile/{username}/:
+  
+    get:
+      tags:  
+        - User
+      summary: Get user stream
+      description: Get stream of photo of a specific user
+      security:
+        - bearerAuth: []
+      operationId: getUserProfileStream
+      parameters:
+      - name: userid
+        in: path
+        description: Identifier of user
+        required: true
+        schema:
+          $ref: "#/components/schemas/Identifier"
+      - name: username
+        in: path
+        description: Name of user
+        required: true
+        schema:
+          $ref: "#/components/schemas/Username"
+      responses:
+        '200':
           description: Stream page returned successfully
           content:
             application/json:
@@ -528,6 +571,40 @@ paths:
         required: true
         schema:
           $ref: '#/components/schemas/Identifier'
+
+    get:
+      tags:
+        - Like
+      summary: Get specific like
+      description: Return a specific like of a specific photo
+      security:
+        - bearerAuth: []
+      operationId: getLike
+      responses:
+        '200':
+          description: Like returned succesfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Like'
+        '404':
+          description: Like not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '500':
+          description: The server encountered an internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
 
     post:
       tags:

@@ -5,9 +5,13 @@ export default {
 			errormsg: null,
 			loading: false,
 			photos: [],
-			likes: [],
+			like: {
+				photoid: 0,
+				userid: 0
+			},
 			comment: "",
 			username: "",
+			loggedId: 0
 		}
 	},
 	methods: {
@@ -27,6 +31,7 @@ export default {
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
+			this.loggedId = localStorage.userid
 			this.loading = false;
 		},
 		async uploadPhoto() {
@@ -67,7 +72,7 @@ export default {
 			this.loading = true;
 			this.errormsg = null;
 			try {
-				await this.$axios.delete("/photos/" + photoid + "/likes/" + localStorage.userid ,null , {
+				await this.$axios.delete("/photos/" + photoid + "/likes/" + localStorage.userid , {
 					headers: {
 						Authorization: localStorage.userid
 					}
@@ -99,24 +104,27 @@ export default {
 			localStorage.usernameToSearch = string
 			this.$router.push("/user/"+ string);
 		},
-		liked(photoid, p_userid) {
+		async showPhoto(photoid){
+			this.$router.push("/photo/"+ photoid);
+			this.refresh()
+		},
+		async liked(photoid, userid) {
 			this.errormsg = null;
 			try {
-				let response = this.$axios.get("/photos/" + photoid + "/likes/", {
+				let response = await this.$axios.get("/photos/" + photoid + "/likes/" + userid, {
 					headers: {
-						Authorization: p_userid
+						Authorization: this.userid
 					}
 				});
-				likes = response.data
-				for (let i = 0; i < likes.length; i++) {
-					if (likes[i]["UserId"] == localStorage.userid) {
-						return true;
-					}
-				}
-				return false;
+				this.like = response.data
+				console.log(this.like.userid)
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
+			if (this.like.userid != 0) {
+				return true
+			}
+			return false;
 		}
 	},
 	mounted() {
@@ -174,12 +182,15 @@ export default {
 					<div class="row" >
 						<div class="col-md-6" v-if="!loading" v-for="p in photos">
 							<p class="card-text">
-								<img :src="'data:image;base64,' + p.Picture" style="height: 250px;"/><br />
+								<div @click="showPhoto(p.ID)">
+									<img :src="'data:image;base64,' + p.Picture" style="height: 250px;"/><br />
+								</div>
 								User: {{ p.User_id }}<br />
 								Date: {{ p.Date_time }}<br />
 								Likes: {{ p.Likes }}<br />
 								Comments: {{ p.Comments }}<br />
-							<button type="button" class="btn btn-primary" @click="likePhoto(p.ID)">Like</button>
+							<button type="button" class="btn btn-primary" @click="likePhoto(p.ID)" v-if="this.liked(p.ID, this.loggedId) == false">Like</button>
+							<button type="button" class="btn btn-danger" @click="unlikePhoto(p.ID)" v-else>Unlike</button>
 							</p>
 							<div class="input-group mb-3">
 								<input type="string" class="form-control" v-model="comment" placeholder="Write your comment here">

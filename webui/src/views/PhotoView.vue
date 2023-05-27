@@ -17,6 +17,7 @@ export default {
 				date_time: "",
 				comments: 0
 			},
+			comments: [],
 			loggedId: 0
             
 		}
@@ -32,6 +33,16 @@ export default {
 					}
 				});
 				this.photo = response.data;
+			} catch (e) {
+				this.errormsg = e.toString();
+			}
+			try {
+				let response = await this.$axios.get("/photos/" + this.$route.params.photoid + "/comments/", {
+					headers: {
+						Authorization: localStorage.userid
+					}
+				});
+				this.comments = response.data;
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
@@ -58,7 +69,7 @@ export default {
 			this.loading = true;
 			this.errormsg = null;
 			try {
-				await this.$axios.delete("/photos/" + photoid + "/likes/" + localStorage.userid ,null , {
+				await this.$axios.delete("/photos/" + photoid + "/likes/" + localStorage.userid , {
 					headers: {
 						Authorization: localStorage.userid
 					}
@@ -84,6 +95,7 @@ export default {
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
+			this.refresh()
 			this.loading = false;
 		},
 		async getUserProfile(string) {
@@ -125,14 +137,25 @@ export default {
                     <img :src="'data:image;base64,' + this.photo.picture" style="height: 250px;"/><br />
                     Likes: {{ this.photo.likes }} <br />
                     <div v-if="this.loggedId != this.photo.user_id">
-                        <button type="button" class="btn btn-primary" @click="likePhoto()">Like</button>
-                        <button type="button" class="btn btn-danger" @click="unlikePhoto()">Unlike</button>
+                        <button type="button" class="btn btn-primary" @click="likePhoto(this.photo.id)">Like</button>
+                        <button type="button" class="btn btn-danger" @click="unlikePhoto(this.photo.id)">Unlike</button>
                     </div>
                 </p>
                 <div class="input-group mb-3">
                     <input type="string" class="form-control" v-model="comment" placeholder="Write your comment here">
-                    <button type="button" class="btn btn-primary" @click="commentPhoto()" >Post</button>
+                    <button type="button" class="btn btn-primary" @click="commentPhoto(this.photo.id)" >Post</button>
                 </div>
+				<div class="card">
+					<div class="box">
+						<p class="card-text" v-for="c in comments">
+							{{ c.UserId }} <br />
+							{{ c.Text }} 
+							<button type="button" class="btn btn-danger" @click="deleteComments(c.ID)" v-if="c.UserId == this.loggedId">Delete</button>
+							<br />
+							<hr>
+						</p>
+					</div>
+				</div>
 			</div>
 		</div>
 
