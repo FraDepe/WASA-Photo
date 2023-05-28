@@ -5,10 +5,11 @@ export default {
 			errormsg: null,
 			loading: false,
 			file: null,
+			loggedId: null
 		}
 	},
 	methods: {
-		uploadPhoto: async function () {
+		async uploadPhoto() {
 			this.loading = true;
 			this.errormsg = null;
 			try {
@@ -19,6 +20,7 @@ export default {
 				});
 				this.$router.push("/home");
 			} catch (e) {
+				this.$router.push("/error");
 				this.errormsg = e.toString();
 			}
 			this.loading = false;

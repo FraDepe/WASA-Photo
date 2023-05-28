@@ -43,7 +43,7 @@ export default {}
 						<li class="nav-item">
 							<RouterLink to="/" class="nav-link">
 								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#file-text"/></svg>
-								Logout
+								Login
 							</RouterLink>
 						</li>
 					</ul>

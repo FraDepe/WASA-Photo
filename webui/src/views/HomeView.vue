@@ -81,7 +81,7 @@ export default {
 </script>
 
 <template>
-	<div>
+	<div v-if="this.errormsg==null">
 		<div
 			class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
 			<h1 class="h2">Following stream</h1>
@@ -139,12 +139,16 @@ export default {
 							</p>
 							<div class="input-group mb-3">
 								<input type="string" class="form-control" v-model="comment" placeholder="Write your comment here">
-								<button type="button" class="btn btn-primary" @click="commentPhoto(p.ID)" >Post</button>
+								<button type="button" :disabled="this.comment == '' " class="btn btn-primary" @click="commentPhoto(p.ID)" >Post</button>
 							</div>
 						</div>
 					</div>
-				
+				</div>
 			</div>
+	</div>
+	<div v-else>
+		<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+			<h4> {{ this.errormsg }}</h4>
 		</div>
 	</div>
 </template>

@@ -294,7 +294,7 @@ export default {
 							</p>
 							<div class="input-group mb-3">
 								<input type="string" class="form-control" v-model="comment" placeholder="Write your comment here">
-								<button type="button" class="btn btn-primary" @click="commentPhoto(p.ID)" >Post</button>
+								<button type="button" :disabled="this.comment == '' " class="btn btn-primary" @click="commentPhoto(p.ID)" >Post</button>
 							</div>
 						</div>
 					</div>

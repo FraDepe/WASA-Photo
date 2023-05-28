@@ -8,8 +8,8 @@ export default {
 		}
 	},
 	methods: {
-		doLogin: async function () {
-            localStorage.clear          // perform a clear to logout and login
+		async doLogin() {
+            localStorage.clear()          // perform a clear to logout and login
 			this.loading = true;
 			this.errormsg = null;
 			try {
@@ -23,6 +23,9 @@ export default {
 			}
 			this.loading = false;
 		}
+	},
+	mounted() {
+		localStorage.clear()
 	}
 }
 </script>
