@@ -26,7 +26,7 @@ func (rt *_router) getFollowed(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	dbuser, err := rt.db.GetFollowed(userIdFollowed, userId)
+	dbfollow, err := rt.db.GetFollowed(userIdFollowed, userId)
 
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Can't get the follow")
@@ -34,12 +34,12 @@ func (rt *_router) getFollowed(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	var user User
+	var follow Follow
 
-	user.FromDatabase(dbuser)
+	follow.FromDatabase(dbfollow)
 
 	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(user)
+	err = json.NewEncoder(w).Encode(follow)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

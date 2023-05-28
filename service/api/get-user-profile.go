@@ -10,11 +10,6 @@ import (
 	"wasaphoto.uniroma1.it/wasaphoto/service/utils"
 )
 
-type Element struct {
-	User   User
-	Photos []Photo
-}
-
 func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	username := ps.ByName("username")

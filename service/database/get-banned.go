@@ -1,33 +1,29 @@
 package database
 
-func (db *appdbimpl) GetBanned(userIdBanned uint64, userId uint64) (User, error) {
+func (db *appdbimpl) GetBanned(userIdBanned uint64, userId uint64) (Ban, error) {
 
-	var user User
-	user.ID = 0
-	user.Username = ""
-	user.Follower = 0
-	user.Following = 0
-	user.Banned = 0
-	user.Photos = 0
+	var ban Ban
+	ban.UserId = 0
+	ban.BannedId = 0
 
-	rows, err := db.c.Query(`SELECT u.id, u.username, u.follower, u.following, u.banned, u.photos FROM users u, bans b WHERE u.id=? and b.bannedid=u.id and b.userid=?`, userIdBanned, userId)
+	rows, err := db.c.Query(`SELECT userid, bannedid FROM bans WHERE userid=? and bannedid=?`, userId, userIdBanned)
 	if err != nil {
-		return user, err
+		return ban, err
 	}
 
 	for rows.Next() {
-		err = rows.Scan(&user.ID, &user.Username, &user.Follower, &user.Following, &user.Banned, &user.Photos)
+		err = rows.Scan(&ban.UserId, &ban.BannedId)
 		if err != nil {
-			return user, err
+			return ban, err
 		}
 	}
 
 	err = rows.Err()
 	if err != nil {
-		return user, err
+		return ban, err
 	}
 
 	defer func() { _ = rows.Close() }()
-	return user, nil
+	return ban, nil
 
 }

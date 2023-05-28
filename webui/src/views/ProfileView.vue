@@ -9,21 +9,13 @@ export default {
 			usernameToSearch: "",
 			followed: false,
 			follower: {
-				id: 0,
-				username: 0,
-				follower: 0,
-				following: 0,
-				banned: 0,
-				photos: 0
+				followerid: 0,
+				followedid: 0
 			},
 			banned: false,
 			ban: {
-				id: 0,
-				username: 0,
-				follower: 0,
-				following: 0,
-				banned: 0,
-				photos: 0
+				userid: 0,
+				bannedid: 0
 			},
 			user: {
 				id: 0,
@@ -50,9 +42,12 @@ export default {
 					}
 				});
 				this.user = response.data;
+				this.loggedId = localStorage.userid
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
+
+			console.log(this.errormsg)
 
 			try {
 				let response = await this.$axios.get("/users/"+ localStorage.userid +"/profile/" + localStorage.usernameToSearch + "/", {
@@ -64,6 +59,8 @@ export default {
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
+			
+			console.log(this.errormsg)
 
 			try {
 				let response = await this.$axios.get("/users/"+ localStorage.userid +"/following/" + this.user.id, {
@@ -75,12 +72,14 @@ export default {
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
-			if (this.follower.id == this.user.id) {
+			if (this.follower.followedid == this.user.id) {
 				this.followed = true
 			}
 			else {
 				this.followed = false
 			}
+
+			console.log(this.errormsg)
 
 			try {
 				let response = await this.$axios.get("/users/"+ localStorage.userid +"/banned/" + this.user.id);
@@ -88,16 +87,18 @@ export default {
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
-			console.log(this.ban.id)
-			if (this.ban.id == this.user.id) {
+			if (this.ban.bannedid == this.user.id) {
 				this.banned = true
 			}
 			else {
 				this.banned = false
 			}
-			
+
+			console.log(this.errormsg)
+
 			this.loading = false;
-			this.loggedId = localStorage.userid
+			console.log(this.user.id)
+			console.log(this.loggedId)
 		},
 
 		async followUser() {
@@ -221,9 +222,8 @@ export default {
 </script>
 
 <template>
-	<div>
-		<div
-			class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+	<div v-if="this.errormsg == null">
+		<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
 			<h1 class="h2" v-if="this.user.id != this.loggedId">Profile of {{this.user.username}}</h1>
 			<h1 class="h2" v-else>Your stream</h1>
 			<h6 class="label"> Follower: {{this.user.follower}}</h6>
@@ -301,8 +301,11 @@ export default {
 				
 			</div>
 		</div>
-
-		
+	</div>
+	<div v-else>
+		<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+			<h4> {{ this.errormsg }}</h4>
+		</div>
 	</div>
 </template>
 

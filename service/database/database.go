@@ -82,6 +82,16 @@ type Comment struct {
 	UserId  uint64
 }
 
+type Follow struct {
+	FollowerId uint64
+	FollowedId uint64
+}
+
+type Ban struct {
+	UserId   uint64
+	BannedId uint64
+}
+
 type Like struct {
 	PhotoId uint64
 	UserId  uint64
@@ -106,11 +116,11 @@ type AppDatabase interface {
 	LikePhoto(Like) (Like, error)
 	UnlikePhoto(uint64, uint64) error
 	ListFollowed(uint64, uint64) ([]User, error)
-	GetFollowed(uint64, uint64) (User, error)
+	GetFollowed(uint64, uint64) (Follow, error)
 	FollowUser(uint64, uint64) (User, error)
 	UnfollowUser(uint64, uint64) error
 	ListBanned(uint64) ([]User, error)
-	GetBanned(uint64, uint64) (User, error)
+	GetBanned(uint64, uint64) (Ban, error)
 	BanUser(uint64, uint64) (User, error)
 	UnbanUser(uint64, uint64) error
 

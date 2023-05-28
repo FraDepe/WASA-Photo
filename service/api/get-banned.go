@@ -26,7 +26,7 @@ func (rt *_router) getBanned(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	dbuser, err := rt.db.GetFollowed(userIdBanned, userId)
+	dbban, err := rt.db.GetBanned(userIdBanned, userId)
 
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Can't get the ban")
@@ -34,12 +34,12 @@ func (rt *_router) getBanned(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	var user User
+	var ban Ban
 
-	user.FromDatabase(dbuser)
+	ban.FromDatabase(dbban)
 
 	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(user)
+	err = json.NewEncoder(w).Encode(ban)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

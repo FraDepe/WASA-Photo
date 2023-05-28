@@ -75,6 +75,22 @@ export default {
 			this.loading = false;
 		},
 
+		async deletePhoto() {
+			this.loading = true;
+			this.errormsg = null;
+			try {
+				await this.$axios.delete("/photos/" + this.photo.id, {
+					headers: {
+						Authorization: localStorage.userid
+					}
+				});
+				this.$router.push("/home");
+			} catch (e) {
+				this.errormsg = e.toString();
+			}
+			this.loading = false;
+		},
+
 		async likePhoto(photoid) {
 			this.loading = true;
 			this.errormsg = null;
@@ -176,8 +192,9 @@ export default {
 		<LoadingSpinner v-if="loading"></LoadingSpinner>
 
 		<div class="card">
-			<div class="card-header">
-				Photo dated {{ this.photo.date_time }} <br/> 
+			<div class="card-header d-flex justify-content-between align-items-center">
+				<h6 class="mb-0">Photo dated {{ this.photo.date_time }}</h6> 
+				<button type="button" class="btn btn-danger" @click="deletePhoto()" v-if="this.photo.user_id == this.loggedId">Delete</button> <br/> 
 			</div>
 			<div class="card-body">
                 <p class="card-text">

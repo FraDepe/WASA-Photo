@@ -120,3 +120,37 @@ func (l *Like) ToDatabase() database.Like {
 		UserId:  l.UserId,
 	}
 }
+
+type Follow struct {
+	FollowerId uint64 `json:"followerid"`
+	FollowedId uint64 `json:"followedid"`
+}
+
+func (f *Follow) FromDatabase(follow database.Follow) {
+	f.FollowerId = follow.FollowerId
+	f.FollowedId = follow.FollowedId
+}
+
+func (f *Follow) ToDatabase() database.Follow {
+	return database.Follow{
+		FollowerId: f.FollowerId,
+		FollowedId: f.FollowedId,
+	}
+}
+
+type Ban struct {
+	UserId   uint64 `json:"userid"`
+	BannedId uint64 `json:"bannedid"`
+}
+
+func (b *Ban) FromDatabase(ban database.Ban) {
+	b.UserId = ban.UserId
+	b.BannedId = ban.BannedId
+}
+
+func (b *Ban) ToDatabase() database.Ban {
+	return database.Ban{
+		UserId:   b.UserId,
+		BannedId: b.BannedId,
+	}
+}

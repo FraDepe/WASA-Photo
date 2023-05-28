@@ -1,33 +1,29 @@
 package database
 
-func (db *appdbimpl) GetFollowed(userIdFollowed uint64, userId uint64) (User, error) {
+func (db *appdbimpl) GetFollowed(userIdFollowed uint64, userId uint64) (Follow, error) {
 
-	var user User
-	user.ID = 0
-	user.Username = ""
-	user.Follower = 0
-	user.Following = 0
-	user.Banned = 0
-	user.Photos = 0
+	var follow Follow
+	follow.FollowerId = 0
+	follow.FollowedId = 0
 
-	rows, err := db.c.Query(`SELECT u.id, u.username, u.follower, u.following, u.banned, u.photos FROM users u, follows f WHERE u.id=? and f.followedid=u.id and f.followerid=?`, userIdFollowed, userId)
+	rows, err := db.c.Query(`SELECT followerid, followedid FROM follows WHERE followerid=? and followedid=?`, userId, userIdFollowed)
 	if err != nil {
-		return user, err
+		return follow, err
 	}
 
 	for rows.Next() {
-		err = rows.Scan(&user.ID, &user.Username, &user.Follower, &user.Following, &user.Banned, &user.Photos)
+		err = rows.Scan(&follow.FollowerId, &follow.FollowedId)
 		if err != nil {
-			return user, err
+			return follow, err
 		}
 	}
 
 	err = rows.Err()
 	if err != nil {
-		return user, err
+		return follow, err
 	}
 
 	defer func() { _ = rows.Close() }()
-	return user, nil
+	return follow, nil
 
 }

@@ -1103,6 +1103,30 @@ components:
           $ref: '#/components/schemas/Identifier'
         user_Id:
           $ref: '#/components/schemas/Identifier'
+
+    Follow:
+      required:
+        - followerid
+        - followedid
+      type: object
+      description: Pair of user id follower-followed
+      properties:
+        photoId:
+          $ref: '#/components/schemas/Identifier'
+        user_Id:
+          $ref: '#/components/schemas/Identifier'
+
+      Ban:
+      required:
+        - user_id
+        - bannedid
+      type: object
+      description: Pair of user id user-banned
+      properties:
+        photoId:
+          $ref: '#/components/schemas/Identifier'
+        user_Id:
+          $ref: '#/components/schemas/Identifier'
       
     ApiResponse:
       type: object
