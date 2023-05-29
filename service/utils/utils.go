@@ -43,7 +43,6 @@ func ErrorTranslate(w http.ResponseWriter, err error) {
 	} else {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-	return
 }
 
 func ValidUsername(username string) bool {
