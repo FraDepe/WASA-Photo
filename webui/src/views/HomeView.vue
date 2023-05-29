@@ -5,7 +5,7 @@ export default {
 			errormsg: null,
 			loading: false,
 			photos: [],
-			comment: "",
+			comment: [''],
 			username: "",
 			loggedId: 0,
 			boolean: true,
@@ -49,16 +49,16 @@ export default {
 			}
 			this.loading = false;
 		},
-		async commentPhoto(photoid) {
+		async commentPhoto(photoid, stringa) {
 			this.loading = true;
 			this.errormsg = null;
 			try {
-				await this.$axios.post("/photos/" + photoid + "/comments/", this.comment , {
+				await this.$axios.post("/photos/" + photoid + "/comments/", stringa , {
 					headers: {
 						Authorization: localStorage.userid
 					}
 				});
-				this.comment = ""
+				this.comment = ['']
 				await this.refresh();
 			} catch (e) {
 				this.errormsg = e.toString();
@@ -138,8 +138,8 @@ export default {
 								Comments: {{ p.Comments }}<br />
 							</p>
 							<div class="input-group mb-3">
-								<input type="string" class="form-control" v-model="comment" placeholder="Write your comment here">
-								<button type="button" :disabled="this.comment == '' " class="btn btn-primary" @click="commentPhoto(p.ID)" >Post</button>
+								<input type="string" class="form-control" v-model="comment[p.ID]" placeholder="Write your comment here">
+								<button type="button" :disabled="this.comment[p.ID] == null " class="btn btn-primary" @click="commentPhoto(p.ID, this.comment[p.ID])" >Post</button>
 							</div>
 						</div>
 					</div>
