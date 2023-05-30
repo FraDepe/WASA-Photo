@@ -5,6 +5,7 @@ export default {
 			errormsg: null,
 			loading: false,
 			photos: [],
+			listLikes: [],
 			like: {
 				photoid: 0,
 				userid: 0
@@ -57,11 +58,10 @@ export default {
 			try {
 				let response = await this.$axios.get("/photos/" + this.$route.params.photoid + "/likes/" + localStorage.userid, {
 					headers: {
-						Authorization: this.userid
+						Authorization: this.photo.user_id
 					}
 				});
 				this.like = response.data
-				console.log(this.like.userid)
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
@@ -71,6 +71,18 @@ export default {
 			} else {
 				this.liked = true
 			}
+
+			try {
+				let response = await this.$axios.get("/photos/" + this.$route.params.photoid + "/likes/", {
+					headers: {
+						Authorization: this.photo.user_id
+					}
+				});
+				this.listLikes = response.data
+			} catch (e) {
+				this.errormsg = e.toString();
+			}
+
             this.loggedId = localStorage.userid
 			this.loading = false;
 		},
@@ -160,12 +172,6 @@ export default {
 			this.loading = false;
 		},
 
-		async getUserProfile(string) {
-			localStorage.usernameToSearch = string
-			this.$router.push("/user/"+ string);
-			this.usernameToSearch = ""
-			this.refresh()
-		},
 
 	},
 	mounted() {
@@ -176,20 +182,11 @@ export default {
 
 <template>
 	<div v-if="this.errormsg==null">
-		<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-			<div class="btn-toolbar mb-2 mb-md-0">
-				<div class="input-group me-2">
-					<input type="string" class="form-control" v-model="usernameToSearch" placeholder="Search here for a user">
-					<button type="button" class="btn btn-primary" @click="getUserProfile(this.usernameToSearch)" >
-						Search
-					</button>
-				</div>
-			</div>
-		</div>
-
 		<ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
 
 		<LoadingSpinner v-if="loading"></LoadingSpinner>
+
+		<br />
 
 		<div class="card">
 			<div class="card-header d-flex justify-content-between align-items-center">
@@ -197,6 +194,7 @@ export default {
 				<button type="button" class="btn btn-danger" @click="deletePhoto()" v-if="this.photo.user_id == this.loggedId">Delete</button> <br/> 
 			</div>
 			<div class="card-body">
+
                 <p class="card-text">
                     <img :src="'data:image;base64,' + this.photo.picture" style="height: 250px;"/><br />
                     Likes: {{ this.photo.likes }} <br />
@@ -205,10 +203,23 @@ export default {
                         <button type="button" class="btn btn-danger" @click="unlikePhoto(this.photo.id)" v-else>Unlike</button>
                     </div>
                 </p>
+
                 <div class="input-group mb-3">
                     <input type="string" class="form-control" v-model="comment" placeholder="Write your comment here">
                     <button type="button" :disabled="this.comment == '' " class="btn btn-primary" @click="commentPhoto(this.photo.id)" >Post</button>
                 </div>
+
+				<div class="dropdown">
+					<button type="button" class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown">
+						Likes
+					</button>
+					<div class="dropdown-menu">
+						<a class="dropdown-item disabled" v-for="l in this.listLikes"> {{ l.UserId }}</a>
+					</div>
+				</div>
+
+				<br />
+
 				<div class="card">
 					<div class="box">
 						<p class="card-text" v-for="c in comments">
@@ -220,6 +231,7 @@ export default {
 						</p>
 					</div>
 				</div>
+
 			</div>
 		</div>
 	</div>

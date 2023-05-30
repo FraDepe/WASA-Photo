@@ -7,6 +7,8 @@ export default {
 			photos: [],
 			comment: [''],
 			usernameToSearch: "",
+			listFollower: [],
+			listFollowing: [],
 			followed: false,
 			follower: {
 				followerid: 0,
@@ -46,8 +48,7 @@ export default {
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
-
-			console.log(this.errormsg)
+			console.log("Prendo l'user")
 
 			try {
 				let response = await this.$axios.get("/users/"+ localStorage.userid +"/profile/" + localStorage.usernameToSearch + "/", {
@@ -59,8 +60,31 @@ export default {
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
-			
-			console.log(this.errormsg)
+			console.log("Prendo le foto")
+
+			try {
+				let response = await this.$axios.get("/users/"+ this.user.id +"/following/", {
+					headers: {
+						Authorization: this.user.id
+					}
+				});
+				this.listFollowing = response.data;
+			} catch (e) {
+				this.errormsg = e.toString();
+			}
+			console.log("Prendo i following")
+
+			try {
+				let response = await this.$axios.get("/users/"+ this.user.id +"/follower/", {
+					headers: {
+						Authorization: this.user.id
+					}
+				});
+				this.listFollower = response.data;
+			} catch (e) {
+				this.errormsg = e.toString();
+			}
+			console.log("Prendo i follower")
 
 			try {
 				let response = await this.$axios.get("/users/"+ localStorage.userid +"/following/" + this.user.id, {
@@ -78,8 +102,8 @@ export default {
 			else {
 				this.followed = false
 			}
-
-			console.log(this.errormsg)
+			console.log("Controllo il bottone")
+			console.log(this.followed)
 
 			try {
 				let response = await this.$axios.get("/users/"+ localStorage.userid +"/banned/" + this.user.id);
@@ -94,11 +118,10 @@ export default {
 				this.banned = false
 			}
 
-			console.log(this.errormsg)
-
+			console.log("Controllo il secondo bottone")
+			console.log(this.banned)
+			console.log(this.photos)
 			this.loading = false;
-			console.log(this.user.id)
-			console.log(this.loggedId)
 		},
 
 		async followUser() {
@@ -111,12 +134,11 @@ export default {
 						Authorization: localStorage.userid
 					}
 				});
-				this.following = true
-				await this.refresh();
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
-
+			this.followed = true
+			this.refresh();
 			this.loading = false;
 		},
 
@@ -130,11 +152,11 @@ export default {
 						Authorization: localStorage.userid
 					}
 				});
-				this.following = false
-				await this.refresh();
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
+			this.followed = false
+			this.refresh();
 			this.loading = false;
 		},
 
@@ -148,10 +170,11 @@ export default {
 						Authorization: localStorage.userid
 					}
 				});
-				await this.refresh();
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
+			this.banned = true
+			this.refresh()
 			this.loading = false;
 		},
 
@@ -165,10 +188,11 @@ export default {
 						Authorization: localStorage.userid
 					}
 				});
-				await this.refresh();
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
+			this.banned = false
+			this.refresh()
 			this.loading = false;
 		},
 
@@ -182,18 +206,11 @@ export default {
 					}
 				});
 				this.comment = ['']
-				await this.refresh();
+				this.refresh();
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
 			this.loading = false;
-		},
-
-		async getUserProfile(string) {
-			localStorage.usernameToSearch = string
-			this.$router.push("/user/"+ string);
-			this.usernameToSearch = ""
-			this.refresh()
 		},
 
 		async showPhoto(photoid){
@@ -223,10 +240,31 @@ export default {
 <template>
 	<div v-if="this.errormsg == null">
 		<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+
 			<h1 class="h2" v-if="this.user.id != this.loggedId">Profile of {{this.user.username}}</h1>
 			<h1 class="h2" v-else>Your stream</h1>
-			<h6 class="label"> Follower: {{this.user.follower}}</h6>
-			<h6 class="label"> Following: {{this.user.following}}</h6>
+
+			<div class="btn-group">
+				<button type="button" class="btn btn-default">Following: {{this.user.following}}</button>
+				<button type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" data-bs-reference="parent">
+					<span class="visually-hidden">Toggle Dropdown</span>
+				</button>
+				<div class="dropdown-menu">
+					<a class="dropdown-item" v-for="us in this.listFollowing">{{ us.Username}}</a>
+				</div>
+			</div>
+
+			<div class="btn-group">
+				<button type="button" class="btn btn-default">Follower: {{this.user.follower}}</button>
+				<button type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" data-bs-reference="parent">
+					<span class="visually-hidden">Toggle Dropdown</span>
+				</button>
+				<div class="dropdown-menu">
+					<a class="dropdown-item" v-for="use in this.listFollower">{{ use.Username}}</a>
+				</div>
+			</div>
+
+
 			<div class="btn-toolbar mb-2 mb-md-0">
 				<div class="input-group me-2" v-if="this.user.id == this.loggedId">
 					<input type="string" class="form-control" v-model="newUsername" placeholder="New username">
@@ -234,43 +272,37 @@ export default {
 						Change
 					</button>
 				</div>
-				<div class="input-group me-2">
-					<input type="string" class="form-control" v-model="usernameToSearch" placeholder="Search here for a user">
-					<button type="button" class="btn btn-primary" @click="getUserProfile(this.usernameToSearch)" >
-						Search
-					</button>
-				</div>
-					<div v-if="this.user.id != this.loggedId">
-						<div class="btn-group me-2" v-if="this.followed == false"> 
-							<button type="button" class="btn btn-sm btn-success" @click="followUser">
-								Follow
-							</button>
-						</div>
-						<div class="btn-group me-2" v-else>
-							<button type="button" class="btn btn-sm btn-danger" @click="unfollowUser">
-								Unfollow
-							</button>
-						</div>
-						<div class="btn-group me-2" v-if="this.banned == false"> 
-							<button type="button" class="btn btn-sm btn-outline-danger" @click="banUser">
-								Ban
-							</button>
-						</div>
-						<div class="btn-group me-2" v-else>
-							<button type="button" class="btn btn-sm btn-outline-danger" @click="unbanUser">
-								Unban
-							</button>
-						</div>
+				<div v-else>
+					<div class="btn-group me-2" v-if="this.followed == false"> 
+						<button type="button" class="btn btn-sm btn-success" @click="followUser">
+							Follow
+						</button>
+					</div>
+					<div class="btn-group me-2" v-else>
+						<button type="button" class="btn btn-sm btn-danger" @click="unfollowUser">
+							Unfollow
+						</button>
+					</div>
+					<div class="btn-group me-2" v-if="this.banned == false"> 
+						<button type="button" class="btn btn-sm btn-outline-danger" @click="banUser">
+							Ban
+						</button>
+					</div>
+					<div class="btn-group me-2" v-else>
+						<button type="button" class="btn btn-sm btn-outline-danger" @click="unbanUser">
+							Unban
+						</button>
 					</div>
 				</div>
 			</div>
+		</div>
 
 		<ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
 
 		<LoadingSpinner v-if="loading"></LoadingSpinner>
 
-		<div class="card" v-if="photos.length === 0">
-			<div class="card-body">
+		<div class="card" v-if="this.photos.length == null">
+			<div class="card-header">
 				<p>{{this.user.username}} hasn't upload any photos yet</p>
 			</div>
 		</div>

@@ -116,6 +116,7 @@ type AppDatabase interface {
 	LikePhoto(Like) (Like, error)
 	UnlikePhoto(uint64, uint64) error
 	ListFollowed(uint64, uint64) ([]User, error)
+	ListFollower(uint64, uint64) ([]User, error)
 	GetFollowed(uint64, uint64) (Follow, error)
 	FollowUser(uint64, uint64) (User, error)
 	UnfollowUser(uint64, uint64) error
