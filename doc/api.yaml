@@ -1116,7 +1116,7 @@ components:
         user_Id:
           $ref: '#/components/schemas/Identifier'
 
-      Ban:
+    Ban:
       required:
         - user_id
         - bannedid
