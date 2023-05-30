@@ -138,8 +138,8 @@ export default {
 				this.errormsg = e.toString();
 			}
 			this.followed = true
-			this.refresh();
 			this.loading = false;
+			this.refresh();
 		},
 
 		async unfollowUser() {
@@ -156,8 +156,8 @@ export default {
 				this.errormsg = e.toString();
 			}
 			this.followed = false
-			this.refresh();
 			this.loading = false;
+			this.refresh();
 		},
 
 		async banUser() {
@@ -174,8 +174,8 @@ export default {
 				this.errormsg = e.toString();
 			}
 			this.banned = true
-			this.refresh()
 			this.loading = false;
+			this.refresh();
 		},
 
 		async unbanUser() {
@@ -192,8 +192,8 @@ export default {
 				this.errormsg = e.toString();
 			}
 			this.banned = false
-			this.refresh()
 			this.loading = false;
+			this.refresh()
 		},
 
 		async commentPhoto(photoid, stringa) {
@@ -242,7 +242,7 @@ export default {
 		<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
 
 			<h1 class="h2" v-if="this.user.id != this.loggedId">Profile of {{this.user.username}}</h1>
-			<h1 class="h2" v-else>Your stream</h1>
+			<h1 class="h2" v-else>Your profile</h1>
 
 			<div class="btn-group">
 				<button type="button" class="btn btn-default">Following: {{this.user.following}}</button>
