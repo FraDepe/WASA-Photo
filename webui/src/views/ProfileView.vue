@@ -239,8 +239,8 @@ export default {
 
 <template>
 	<div v-if="this.errormsg == null">
-		<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
 
+		<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
 			<h1 class="h2" v-if="this.user.id != this.loggedId">Profile of {{this.user.username}}</h1>
 			<h1 class="h2" v-else>Your profile</h1>
 
@@ -250,7 +250,7 @@ export default {
 					<span class="visually-hidden">Toggle Dropdown</span>
 				</button>
 				<div class="dropdown-menu">
-					<a class="dropdown-item" v-for="us in this.listFollowing">{{ us.Username}}</a>
+					<a class="dropdown-item" v-for="us in this.listFollowing" :key="us">{{ us.Username}}</a>
 				</div>
 			</div>
 
@@ -260,7 +260,7 @@ export default {
 					<span class="visually-hidden">Toggle Dropdown</span>
 				</button>
 				<div class="dropdown-menu">
-					<a class="dropdown-item" v-for="use in this.listFollower">{{ use.Username}}</a>
+					<a class="dropdown-item" v-for="use in this.listFollower" :key="use">{{ use.Username}}</a>
 				</div>
 			</div>
 
@@ -301,7 +301,7 @@ export default {
 
 		<LoadingSpinner v-if="loading"></LoadingSpinner>
 
-		<div class="card" v-if="this.photos.length == null">
+		<div class="card" v-if="this.photos == null">
 			<div class="card-header">
 				<p>{{this.user.username}} hasn't upload any photos yet</p>
 			</div>

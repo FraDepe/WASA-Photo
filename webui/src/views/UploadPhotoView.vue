@@ -9,6 +9,9 @@ export default {
 		}
 	},
 	methods: {
+		refresh() {
+			this.loggedId = localStorage.userid
+		},
 		async uploadPhoto() {
 			this.loading = true;
 			this.errormsg = null;
@@ -30,13 +33,15 @@ export default {
 			this.file = URL.createObjectURL(this.$refs.image.files[0])
 
 		},
-		
+	},
+	mounted() {
+		this.refresh()
 	}
 }
 </script>
 
 <template>
-	<div>
+	<div v-if="this.loggedId != null">
 		<div
 			class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
 			<h1 class="h2">Upload your photo</h1>
@@ -57,6 +62,11 @@ export default {
 				Upload
 			</button>
 			<LoadingSpinner v-if="loading"></LoadingSpinner>
+		</div>
+	</div>
+	<div v-else>
+		<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+			<h4> You have to log first </h4>
 		</div>
 	</div>
 </template>
