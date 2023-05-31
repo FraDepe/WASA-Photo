@@ -689,7 +689,7 @@ paths:
                 minItems: 0
                 maxItems: 40
                 items:
-                  $ref: '#/components/schemas/Identifier'
+                  $ref: '#/components/schemas/User'
         '400':
           description: Invalid request
           content:
@@ -733,7 +733,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Like'
+                $ref: '#/components/schemas/Follow'
         '404':
           description: User not found
           content:
@@ -836,7 +836,7 @@ paths:
                 minItems: 0
                 maxItems: 40
                 items:
-                  $ref: '#/components/schemas/Identifier'
+                  $ref: '#/components/schemas/User'
         '400':
           description: Invalid request
           content:
@@ -880,7 +880,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Like'
+                $ref: '#/components/schemas/Ban'
         '404':
           description: User not found
           content:
