@@ -38,7 +38,7 @@ export default {
 			this.errormsg = null;
 
 			try {
-				let response = await this.$axios.get("/users/"+ localStorage.userid +"/profile/" + localStorage.usernameToSearch, {
+				let response = await this.$axios.get("/users/"+ localStorage.userid +"/profile/" + localStorage.username, {
 					headers: {
 						Authorization: localStorage.userid
 					}
@@ -51,7 +51,7 @@ export default {
 			console.log("Prendo l'user")
 
 			try {
-				let response = await this.$axios.get("/users/"+ localStorage.userid +"/profile/" + localStorage.usernameToSearch + "/", {
+				let response = await this.$axios.get("/users/"+ localStorage.userid +"/profile/" + localStorage.username + "/", {
 					headers: {
 						Authorization: localStorage.userid
 					}
@@ -85,41 +85,6 @@ export default {
 				this.errormsg = e.toString();
 			}
 			console.log("Prendo i follower")
-
-			try {
-				let response = await this.$axios.get("/users/"+ localStorage.userid +"/following/" + this.user.id, {
-					headers: {
-						Authorization: localStorage.userid
-					}
-				});
-				this.follower = response.data;
-			} catch (e) {
-				this.errormsg = e.toString();
-			}
-			if (this.follower.followedid == this.user.id) {
-				this.followed = true
-			}
-			else {
-				this.followed = false
-			}
-			console.log("Controllo il bottone")
-			console.log(this.followed)
-
-			try {
-				let response = await this.$axios.get("/users/"+ localStorage.userid +"/banned/" + this.user.id);
-				this.ban = response.data;
-			} catch (e) {
-				this.errormsg = e.toString();
-			}
-			if (this.ban.bannedid == this.user.id) {
-				this.banned = true
-			}
-			else {
-				this.banned = false
-			}
-
-			console.log("Controllo il secondo bottone")
-			console.log(this.banned)
 			console.log(this.photos)
 			this.loading = false;
 		},
@@ -241,8 +206,8 @@ export default {
 	<div v-if="this.errormsg == null">
 
 		<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-			<h1 class="h2" v-if="this.user.id != this.loggedId">Profile of {{this.user.username}}</h1>
-			<h1 class="h2" v-else>My profile</h1>
+	
+			<h1 class="h2" >My profile</h1>
 
 			<div class="btn-group">
 				<button type="button" class="btn btn-default">Following: {{this.user.following}}</button>
@@ -266,34 +231,14 @@ export default {
 
 
 			<div class="btn-toolbar mb-2 mb-md-0">
-				<div class="input-group me-2" v-if="this.user.id == this.loggedId">
+
+				<div class="input-group me-2">
 					<input type="string" class="form-control" v-model="newUsername" placeholder="New username">
-					<button type="button" class="btn btn-primary" @click="changeUsername(this.newUsername)" >
+					<button type="button" class="btn btn-outline-primary" @click="changeUsername(this.newUsername)" >
 						<svg class="feather"> <use href="/feather-sprite-v4.29.0.svg#pen-tool"></use> </svg>
 					</button>
 				</div>
-				<div v-else>
-					<div class="btn-group me-2" v-if="this.followed == false"> 
-						<button type="button" class="btn btn-sm btn-success" @click="followUser">
-							Follow
-						</button>
-					</div>
-					<div class="btn-group me-2" v-else>
-						<button type="button" class="btn btn-sm btn-danger" @click="unfollowUser">
-							Unfollow
-						</button>
-					</div>
-					<div class="btn-group me-2" v-if="this.banned == false"> 
-						<button type="button" class="btn btn-sm btn-outline-danger" @click="banUser">
-							Ban
-						</button>
-					</div>
-					<div class="btn-group me-2" v-else>
-						<button type="button" class="btn btn-sm btn-outline-danger" @click="unbanUser">
-							Unban
-						</button>
-					</div>
-				</div>
+				
 			</div>
 		</div>
 
@@ -303,7 +248,7 @@ export default {
 
 		<div class="card" v-if="this.photos == null">
 			<div class="card-header">
-				<p>{{this.user.username}} hasn't upload any photos yet</p>
+				<p>Upload your first photo</p>
 			</div>
 		</div>
 		<div class="card" v-else>
@@ -326,8 +271,8 @@ export default {
 							<div class="input-group mb-3">
 								<input type="string" class="form-control" v-model="comment[p.ID]" placeholder="Write your comment here">
 								<button type="button" :disabled="this.comment[p.ID] == null " class="btn btn-primary" @click="commentPhoto(p.ID, this.comment[p.ID])" >
-									<svg class="feather"> <use href="/feather-sprite-v4.29.0.svg#send"></use> </svg>
-								</button>
+                                    <svg class="feather"> <use href="/feather-sprite-v4.29.0.svg#send"></use> </svg>
+                                </button>
 							</div>
 						</div>
 					</div>

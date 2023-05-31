@@ -82,23 +82,25 @@ export default {
 
 <template>
 	<div v-if="this.errormsg==null">
+
 		<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
 			<h1 class="h2">Following stream</h1>
 			<div class="btn-toolbar mb-2 mb-md-0">
+
 				<div class="input-group me-2">
 					<input type="string" class="form-control" v-model="username" placeholder="Search here for a user">
-					<button type="button" class="btn btn-primary" @click="getUserProfile(this.username)" >
-						Search
+					<button type="button" class="btn btn-outline-secondary" @click="getUserProfile(this.username)" >
+						<svg class="feather"> <use href="/feather-sprite-v4.29.0.svg#search"></use> </svg>
 					</button>
 				</div>
 				<div class="btn-group me-2">
 					<button type="button" class="btn btn-sm btn-outline-secondary" @click="refresh">
-						Refresh
+						<svg class="feather"> <use href="/feather-sprite-v4.29.0.svg#refresh-cw"></use> </svg>
 					</button>
 				</div>
 				<div class="btn-group me-2">
-					<button type="button" class="btn btn-sm btn-outline-primary" @click="uploadPhoto">
-						Upload a photo
+					<button type="button" class="btn btn-sm btn-outline-success" @click="uploadPhoto">
+						<svg class="feather"> <use href="/feather-sprite-v4.29.0.svg#upload"></use> </svg>
 					</button>
 				</div>
 				<div class="btn-group me-2">
@@ -106,6 +108,7 @@ export default {
 						Change user
 					</button>
 				</div>
+
 			</div>
 		</div>
 
@@ -138,7 +141,9 @@ export default {
 							</p>
 							<div class="input-group mb-3">
 								<input type="string" class="form-control" v-model="comment[p.ID]" placeholder="Write your comment here">
-								<button type="button" :disabled="this.comment[p.ID] == null " class="btn btn-primary" @click="commentPhoto(p.ID, this.comment[p.ID])" >Post</button>
+								<button type="button" :disabled="this.comment[p.ID] == null " class="btn btn-primary" @click="commentPhoto(p.ID, this.comment[p.ID])" >
+									<svg class="feather"> <use href="/feather-sprite-v4.29.0.svg#send"></use> </svg>
+								</button>
 							</div>
 						</div>
 					</div>

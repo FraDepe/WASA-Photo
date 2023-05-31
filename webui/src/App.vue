@@ -29,8 +29,14 @@ export default {}
 							</RouterLink>
 						</li>
 						<li class="nav-item">
+							<RouterLink to="/myprofile" class="nav-link">
+								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#user"/></svg>
+								My profile
+							</RouterLink>
+						</li>
+						<li class="nav-item">
 							<RouterLink to="/new" class="nav-link">
-								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#layout"/></svg>
+								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#upload"/></svg>
 								Upload a photo
 							</RouterLink>
 						</li>

@@ -18,6 +18,7 @@ export default {
 				this.$router.push("/home");
                 this.user = response.data;
                 localStorage.userid = response.data["id"]
+				localStorage.username = response.data["username"]
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
@@ -46,7 +47,7 @@ export default {
 
 		<div>
 			<button v-if="!loading" type="button" class="btn btn-primary" @click="doLogin">
-				Login
+				<svg class="feather"> <use href="/feather-sprite-v4.29.0.svg#pen-tool"></use> </svg>
 			</button>
 			<LoadingSpinner v-if="loading"></LoadingSpinner>
 		</div>

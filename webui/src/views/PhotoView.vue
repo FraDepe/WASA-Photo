@@ -199,14 +199,23 @@ export default {
                     <img :src="'data:image;base64,' + this.photo.picture" style="height: 250px;"/><br />
                     Likes: {{ this.photo.likes }} <br />
                     <div v-if="this.loggedId != this.photo.user_id">
-                        <button type="button" class="btn btn-primary" @click="likePhoto(this.photo.id)" v-if="liked == false">Like</button>
-                        <button type="button" class="btn btn-danger" @click="unlikePhoto(this.photo.id)" v-else>Unlike</button>
+
+                        <button type="button" class="btn btn-primary" @click="likePhoto(this.photo.id)" v-if="liked == false">
+							<svg class="feather"> <use href="/feather-sprite-v4.29.0.svg#thumbs-up"></use> </svg>
+						</button>
+
+                        <button type="button" class="btn btn-danger" @click="unlikePhoto(this.photo.id)" v-else>
+							<svg class="feather"> <use href="/feather-sprite-v4.29.0.svg#thumbs-down"></use> </svg>
+						</button>
+						
                     </div>
                 </p>
 
                 <div class="input-group mb-3">
                     <input type="string" class="form-control" v-model="comment" placeholder="Write your comment here">
-                    <button type="button" :disabled="this.comment == '' " class="btn btn-primary" @click="commentPhoto(this.photo.id)" >Post</button>
+                    <button type="button" :disabled="this.comment == '' " class="btn btn-primary" @click="commentPhoto(this.photo.id)" >
+						<svg class="feather"> <use href="/feather-sprite-v4.29.0.svg#send"></use> </svg>
+					</button>
                 </div>
 
 				<div class="dropdown">

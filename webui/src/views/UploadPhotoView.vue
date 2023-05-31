@@ -59,7 +59,7 @@ export default {
 		<br />
 		<div>
 			<button v-if="!loading" :disabled="this.file == null" type="button" class="btn btn-primary" @click="uploadPhoto">
-				Upload
+				<svg class="feather"> <use href="/feather-sprite-v4.29.0.svg#upload"></use> </svg>
 			</button>
 			<LoadingSpinner v-if="loading"></LoadingSpinner>
 		</div>
