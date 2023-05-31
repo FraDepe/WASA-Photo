@@ -12,9 +12,6 @@ export default {
 		}
 	},
 	methods: {
-		load() {
-			return load
-		},
 		async refresh() {
 			this.loading = true;
 			this.errormsg = null;
@@ -128,9 +125,9 @@ export default {
 			</div>
 			<div class="card-body" >
 				<div class="container" ></div>
-					<div class="row" >
-						<div class="col-md-6" v-if="!loading" v-for="p in photos">
-							<p class="card-text">
+					<div class="row" v-if="!loading">
+						<div class="col-md-6" v-for="p in photos" :key="p">
+							<div class="card-text">
 								<div @click="showPhoto(p.ID)">
 									<img :src="'data:image;base64,' + p.Picture" style="height: 250px;"/><br />
 								</div>
@@ -138,7 +135,7 @@ export default {
 								Date: {{ p.Date_time }}<br />
 								Likes: {{ p.Likes }}<br />
 								Comments: {{ p.Comments }}<br />
-							</p>
+							</div>
 							<div class="input-group mb-3">
 								<input type="string" class="form-control" v-model="comment[p.ID]" placeholder="Write your comment here">
 								<button type="button" :disabled="this.comment[p.ID] == null " class="btn btn-primary" @click="commentPhoto(p.ID, this.comment[p.ID])" >

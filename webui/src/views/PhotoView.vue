@@ -195,7 +195,7 @@ export default {
 			</div>
 			<div class="card-body">
 
-                <p class="card-text">
+                <div class="card-text">
                     <img :src="'data:image;base64,' + this.photo.picture" style="height: 250px;"/><br />
                     Likes: {{ this.photo.likes }} <br />
                     <div v-if="this.loggedId != this.photo.user_id">
@@ -207,9 +207,9 @@ export default {
                         <button type="button" class="btn btn-danger" @click="unlikePhoto(this.photo.id)" v-else>
 							<svg class="feather"> <use href="/feather-sprite-v4.29.0.svg#thumbs-down"></use> </svg>
 						</button>
-						
+
                     </div>
-                </p>
+                </div>
 
                 <div class="input-group mb-3">
                     <input type="string" class="form-control" v-model="comment" placeholder="Write your comment here">
@@ -223,7 +223,7 @@ export default {
 						Likes
 					</button>
 					<div class="dropdown-menu">
-						<a class="dropdown-item disabled" v-for="l in this.listLikes"> {{ l.UserId }}</a>
+						<a class="dropdown-item disabled" v-for="l in this.listLikes" :key="l"> {{ l.UserId }}</a>
 					</div>
 				</div>
 
@@ -231,13 +231,13 @@ export default {
 
 				<div class="card">
 					<div class="box">
-						<p class="card-text" v-for="c in comments">
+						<div class="card-text" v-for="c in comments" :key="c">
 							{{ c.UserId }} <br />
 							{{ c.Text }} 
-							<button type="button" class="btn btn-danger" @click="deleteComment(this.photo.id ,c.ID)" v-if="c.UserId == this.loggedId">Delete</button>
+							<button type="button" class="btn btn-danger btn-sm" @click="deleteComment(this.photo.id ,c.ID)" v-if="c.UserId == this.loggedId">Delete</button>
 							<br />
 							<hr>
-						</p>
+						</div>
 					</div>
 				</div>
 

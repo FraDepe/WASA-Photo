@@ -218,7 +218,7 @@ export default {
 			this.refresh()
 		},
 
-		async changeUsername(string) {
+		async changeUsername() {
 			await this.$axios.put("/users/" + localStorage.userid + "/changeUsername",this.newUsername , {
 					headers: {
 						Authorization: localStorage.userid
@@ -268,7 +268,7 @@ export default {
 			<div class="btn-toolbar mb-2 mb-md-0">
 				<div class="input-group me-2" v-if="this.user.id == this.loggedId">
 					<input type="string" class="form-control" v-model="newUsername" placeholder="New username">
-					<button type="button" class="btn btn-primary" @click="changeUsername(this.newUsername)" >
+					<button type="button" class="btn btn-primary" @click="changeUsername()" >
 						<svg class="feather"> <use href="/feather-sprite-v4.29.0.svg#pen-tool"></use> </svg>
 					</button>
 				</div>
@@ -312,9 +312,9 @@ export default {
 			</div>
 			<div class="card-body">
 				<div class="container" ></div>
-					<div class="row" >
-						<div class="col-md-6" v-if="!loading" v-for="p in photos">
-							<p class="card-text">
+					<div class="row" v-if="!loading">
+						<div class="col-md-6" v-for="p in photos" :key="p">
+							<div class="card-text">
 								<div @click="showPhoto(p.ID)">
 									<img :src="'data:image;base64,' + p.Picture" style="height: 250px;"/><br />
 								</div>
@@ -322,7 +322,7 @@ export default {
 								Date: {{ p.Date_time }}<br />
 								Likes: {{ p.Likes }}<br />
 								Comments: {{ p.Comments }}<br />
-							</p>
+							</div>
 							<div class="input-group mb-3">
 								<input type="string" class="form-control" v-model="comment[p.ID]" placeholder="Write your comment here">
 								<button type="button" :disabled="this.comment[p.ID] == null " class="btn btn-primary" @click="commentPhoto(p.ID, this.comment[p.ID])" >
