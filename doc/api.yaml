@@ -1111,9 +1111,9 @@ components:
       type: object
       description: Pair of user id follower-followed
       properties:
-        photoId:
+        followerid:
           $ref: '#/components/schemas/Identifier'
-        user_Id:
+        followedid:
           $ref: '#/components/schemas/Identifier'
 
     Ban:
@@ -1123,9 +1123,9 @@ components:
       type: object
       description: Pair of user id user-banned
       properties:
-        photoId:
+        user_id:
           $ref: '#/components/schemas/Identifier'
-        user_Id:
+        bannedid:
           $ref: '#/components/schemas/Identifier'
       
     ApiResponse:
