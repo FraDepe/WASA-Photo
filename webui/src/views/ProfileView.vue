@@ -46,7 +46,11 @@ export default {
 				this.user = response.data;
 				this.loggedId = localStorage.userid
 			} catch (e) {
-				this.errormsg = e.toString();
+				if (e.response && e.response.status === 404) {
+					this.errormsg = "404";
+				} else {
+					this.errormsg = e.toString();
+				}
 			}
 			console.log("Prendo l'user")
 
@@ -336,8 +340,18 @@ export default {
 		</div>
 	</div>
 	<div v-else>
-		<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-			<h4> {{ this.errormsg }}</h4>
+		<div v-if="this.errormsg == '404' ">
+			<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+				<h4> The user {{ this.$route.params.username }} doesn't not exist </h4>
+			</div>
+			<div>
+				<h6> Try with a different username</h6>
+			</div>
+		</div>
+		<div v-else>
+			<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+				<h4> {{ this.errormsg }}</h4>
+			</div>
 		</div>
 	</div>
 </template>
