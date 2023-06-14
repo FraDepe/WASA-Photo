@@ -189,10 +189,10 @@ export default {
 						Authorization: localStorage.userid
 					}
 				});
-			localStorage.usernameToSearch = this.newUsername
-			this.$router.replace("/user/"+ this.newUsername);
-			this.newUsername = ""
+			localStorage.username = this.newUsername
+			this.$router.replace("/myprofile");
 			this.refresh()
+			this.newUsername = ""
 		},
 	},
 
