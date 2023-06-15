@@ -214,7 +214,7 @@ export default {
 				<button type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" data-bs-reference="parent">
 					<span class="visually-hidden">Toggle Dropdown</span>
 				</button>
-				<div class="dropdown-menu">
+				<div class="dropdown-menu" v-show="this.listFollowing != null">
 					<a class="dropdown-item" v-for="us in this.listFollowing" :key="us">{{ us.Username}}</a>
 				</div>
 			</div>
@@ -224,7 +224,7 @@ export default {
 				<button type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" data-bs-reference="parent">
 					<span class="visually-hidden">Toggle Dropdown</span>
 				</button>
-				<div class="dropdown-menu">
+				<div class="dropdown-menu" v-show="this.listFollower != null">
 					<a class="dropdown-item" v-for="use in this.listFollower" :key="use">{{ use.Username}}</a>
 				</div>
 			</div>
