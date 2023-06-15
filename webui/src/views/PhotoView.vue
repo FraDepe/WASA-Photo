@@ -222,7 +222,7 @@ export default {
 					<button type="button" class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown">
 						Likes
 					</button>
-					<div class="dropdown-menu">
+					<div class="dropdown-menu" v-show="this.listLikes != null">
 						<a class="dropdown-item disabled" v-for="l in this.listLikes" :key="l"> {{ l.UserId }}</a>
 					</div>
 				</div>
