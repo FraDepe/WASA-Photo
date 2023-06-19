@@ -48,6 +48,8 @@ export default {
 			} catch (e) {
 				if (e.response && e.response.status === 404) {
 					this.errormsg = "404";
+				} else if (e.response && e.response.status === 403) {
+					this.errormsg = "403";
 				} else {
 					this.errormsg = e.toString();
 				}
@@ -346,6 +348,14 @@ export default {
 			</div>
 			<div>
 				<h6> Try with a different username</h6>
+			</div>
+		</div>
+		<div v-if="this.errormsg == '403' ">
+			<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+				<h4> You have been banned by {{ this.$route.params.username }} </h4>
+			</div>
+			<div>
+				<h6> Try asking (politely) to unban you</h6>
 			</div>
 		</div>
 		<div v-else>
