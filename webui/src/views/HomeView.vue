@@ -22,6 +22,7 @@ export default {
 					}
 				});
 				this.photos = response.data;
+				console.log("Prendo le foto")
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
@@ -113,7 +114,7 @@ export default {
 
 		<LoadingSpinner v-if="loading"></LoadingSpinner>
 
-		<div class="card" v-if="photos.length === 0">
+		<div class="card" v-if="this.photos == null">
 			<div class="card-body">
 				<p>No one uploaded a photo</p>
 			</div>
